@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- com.dao.UserDao对应Dao接口 -->
+<mapper namespace = "com.dao.UserDao">
+
+	<select id = "queryUsersCount" resultType = "Integer">
+		select count(*) from User;
+	</select>
+	
+	<select id = "queryUsersCountByName" parameterType = "String" resultType = "Integer">
+		select count(*) from User where name like concat(#{keyword}, '%')
+	</select>
+	
+	<select id = "queryUsersCountByStatus" parameterType = "String" resultType = "Integer">
+		select count(*) from User where status = #{keyword}
+	</select>
+	
+	<select id = "queryUsers" resultType = "com.po.User">
+		select * from User limit #{start}, #{end}
+	</select>
+	
+	<select id = "queryUserByAccount" parameterType = "String" resultType = "com.po.User">
+		select * from User where account = #{keyword}
+	</select>
+	
+	<select id = "queryUsersByName" resultType = "com.po.User">
+		select * from User where name like concat(#{keyword}, '%') limit #{start}, #{end}
+	</select>
+	
+	<select id = "queryUsersByStatus" resultType = "com.po.User">
+		select * from User where status = #{keyword} limit #{start}, #{end}
+	</select>
+
+	<insert id = "addUser" parameterType = "com.po.User">
+		insert into User (account, name, password, status, created_date) values (#{account}, #{name}, #{password}, "off-line", now())
+	</insert>
+	
+	<delete id = "deleteUser" parameterType = "com.po.User">
+		delete from User where no = #{no};
+	</delete>
+
+</mapper>

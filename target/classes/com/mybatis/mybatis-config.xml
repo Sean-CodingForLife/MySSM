@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	 <typeAliases>
+	 	<typeAlias  alias = "AdminUser"  			  	 type = "com.po.AdminUser"/>
+	 	<typeAlias  alias = "User"       			  	 type = "com.po.User"/>
+		<typeAlias  alias = "Department" 			  	 type = "com.po.Department"/>
+		<typeAlias  alias = "Notice"			      	 type = "com.po.Notice"/>
+		<typeAlias  alias = "Job"			      	  	 type = "com.po.Job"/>
+		<typeAlias  alias = "Employee"			      	 type = "com.po.Employee"/>
+		<typeAlias  alias = "AdminUser_Notice_Relate" 	 type = "com.po.AdminUser_Notice_Relate"/>
+		<typeAlias  alias = "Employee_Job_Relate" 	  	 type = "com.po.Employee_Job_Relate"/>
+		<typeAlias  alias = "Employee_Department_Relate" type = "com.po.Employee_Department_Relate"/>
+
+     </typeAliases>
+	 <mappers><!-- 映射器，告诉 MyBatis到哪里去找映射文件-->
+	 	 <mapper resource = "com/mybatis/AdminUserMapper.xml"/>
+	 	 <mapper resource = "com/mybatis/UserMapper.xml"/>
+	 	 <mapper resource = "com/mybatis/DepartmentMapper.xml"/>
+	 	 <mapper resource = "com/mybatis/NoticeMapper.xml"/>
+	 	 <mapper resource = "com/mybatis/AdminUser_Notice_RelateMapper.xml"/>
+	 	 <mapper resource = "com/mybatis/Employee_Job_RelateMapper.xml"/>
+	 	 <mapper resource = "com/mybatis/Employee_Department_RelateMapper.xml"/>
+		 <mapper resource = "com/mybatis/ToolMapper.xml"/>
+		 <mapper resource = "com/mybatis/JobMapper.xml"/>
+		 <mapper resource = "com/mybatis/EmployeeMapper.xml"/>
+ 	</mappers>
+</configuration>
+

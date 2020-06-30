@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- com.dao.AdminUser_Notice_RelateDao对应Dao接口 -->
+<mapper namespace = "com.dao.AdminUser_Notice_RelateDao">
+
+
+    <select id = "queryAdminUser_Notice_RelatesByAdminUser" parameterType = "com.po.AdminUser" resultType = "com.po.AdminUser_Notice_Relate">
+        select * from AdminUser_Notice_Relate where adminUser_no = #{adminUser.no} limit #{start}, #{end}
+    </select>
+
+    <select id = "queryAdminUserByNotice" parameterType = "com.po.Notice" resultType = "com.po.AdminUser">
+        select * from AdminUser where no = (select adminUser_no from AdminUser_Notice_Relate where notice_no = #{no})
+    </select>
+
+    <insert id = "addAdminUser_Notice_Relate" parameterType = "com.po.AdminUser_Notice_Relate">
+        insert into AdminUser_Notice_Relate (adminUser_no, notice_no) values (#{adminUser_no}, #{notice_no})
+    </insert>
+
+    <delete id = "deleteAdminUser_Notice_RelateByNotice" parameterType = "com.po.Notice">
+        delete from AdminUser_Notice_Relate where notice_no = #{no}
+    </delete>
+
+</mapper>

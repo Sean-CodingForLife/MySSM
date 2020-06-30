@@ -1,0 +1,112 @@
+.light {
+	z-index: 1;
+	display: none;
+	position: absolute;
+	top: 100px;
+	left: 100px;
+	width: 700px;
+	height: 300px;
+	padding: 20px;
+	border: 2px solid aqua;
+	background-color: white;
+}
+
+.fade {
+	z-index: 0;
+	display: none;
+	position: fixed;
+	top: 0%;
+	left: 0%;
+	width: 100%;
+	height: 100%;
+	background-color: gray;
+}
+
+.hiddenText {
+	display: none;
+}
+
+.popBoxContent-left {
+	float: left;
+}
+
+.popBoxContent-right {
+	float: right;
+}
+
+.popBoxContent-left,
+.popBoxContent-right {
+	list-style-type: none;
+	display: inline-block;
+}
+
+.popBoxContent {
+	display: inline-block;
+}
+
+.popBoxContent p {
+	display: inline;
+}
+
+.popBoxContent li {
+	list-style-type: none;
+	margin-bottom: 10px;
+}
+
+.form-input-list li{
+	list-style-type: none;
+}
+
+.pageBar>.page-item,
+.page-item-active,
+.prevPage,
+.nextPage {
+
+	display: inline-block;
+	list-style-type: none;
+	cursor: pointer;
+	height: 30px;
+	line-height: 30px;
+	padding: 0px;
+	border: 1px;
+	text-align: center;
+	margin-right: 4px;
+	border-style: solid;
+	border-radius: 4px;
+}
+
+.pageBar>.prevPage,
+.nextPage {
+	width: 65px;
+}
+
+.pageBar>.page-item {
+	border-color: gray;
+	width: 30px;
+}
+
+.pageBar>.page-item-active {
+	border-color: gray;
+	background-color: aqua;
+	width: 30px;
+}
+
+.popBoxOperationBar {
+	position: absolute;
+	left: 0px;
+	bottom: 0px;
+}
+
+.operationBar>.cancel,
+.save {
+	display: none;
+}
+
+.operationBar>.show {
+	display: inline;
+	margin-right: 10px;
+}
+
+#table {
+	font-size: 10px;
+}

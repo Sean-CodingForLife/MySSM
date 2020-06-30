@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- com.dao.JobDao对应Dao接口 -->
+<mapper namespace = "com.dao.JobDao">
+
+    <select id = "queryAllJob" resultType = "com.po.Job">
+        select * from Job;
+    </select>
+
+    <select id = "queryJobByName" resultType = "com.po.Job">
+        select * from Job where name = #{keyword}
+    </select>
+
+    <delete id = "deleteJob" parameterType = "com.po.Job">
+        delete from Job where no = #{no}
+    </delete>
+
+    <select id = "queryJobsByName" resultType = "com.po.Job">
+        select * from Job where name like concat(#{keyword}, '%') limit #{start}, #{end}
+    </select>
+
+    <select id = "queryJobsCountByName" resultType = "Integer">
+        select count(*) from Job where name like concat(#{keyword}, '%');
+    </select>
+
+    <update id = "updateJob" parameterType = "com.po.Job">
+        update Job set name = #{name}, description = #{description} where no = #{no}
+    </update>
+
+    <select id = "queryJobs" resultType = "com.po.Job">
+        select * from Job limit #{start}, #{end};
+    </select>
+
+    <select id = "queryJobsCount" resultType = "Integer">
+        select count(*) from Job
+    </select>
+
+    <insert id = "addJob" parameterType = "com.po.Job">
+        insert into Job (name, description) values (#{name}, #{description})
+    </insert>
+
+</mapper>

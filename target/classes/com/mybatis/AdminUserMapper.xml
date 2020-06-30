@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- com.dao.AdminUserDao对应Dao接口 -->
+<mapper namespace = "com.dao.AdminUserDao">
+
+	<select id = "queryAdminUserByNo" resultType = "com.po.AdminUser">
+		select * from AdminUser where no = #{keyword}
+	</select>
+
+	<select id = "queryAdminUserByAccount" parameterType = "String" resultType = "com.po.AdminUser">
+		select * from AdminUser where account = #{keyword}
+	</select>
+
+	<select id = "queryAdminUserByName" parameterType = "String" resultType = "com.po.AdminUser">
+		select * from AdminUser where name = #{keyword}
+	</select>
+
+</mapper>

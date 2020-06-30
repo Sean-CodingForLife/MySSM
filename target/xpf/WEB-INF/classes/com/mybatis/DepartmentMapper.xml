@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- com.dao.DepartmentDao对应Dao接口 -->
+<mapper namespace = "com.dao.DepartmentDao">
+
+    <select id = "queryAllDepartment" resultType = "com.po.Department">
+        select * from Department;
+    </select>
+
+    <select id = "queryDepartmentByName" resultType = "com.po.Department">
+        select * from Department where name = #{name} limit 1
+    </select>
+
+    <select id = "queryDepartmentsCount" resultType = "Integer">
+        select count(*) from Department
+    </select>
+
+    <select id = "queryDepartments" resultType = "com.po.Department">
+        select * from Department;
+    </select>
+
+    <insert id = "addDepartment" parameterType = "com.po.Department">
+        insert into Department (name, description) values (#{name}, #{description})
+    </insert>
+
+    <select id = "queryDepartmentsCountByName" resultType = "Integer">
+        select count(*) from Department where name like concat(#{keyword}, '%')
+    </select>
+
+    <select id = "queryDepartmentsByName" resultType = "com.po.Department">
+        select * from Department where name like concat(#{keyword}, '%') limit #{start}, #{end}
+    </select>
+
+    <delete id = "deleteDepartment" parameterType = "com.po.Department">
+        delete from Department where no = #{no}
+    </delete>
+
+    <update id = "updateDepartment" parameterType = "com.po.Department">
+        update Department set name = #{name}, description = #{description} where no = #{no}
+    </update>
+
+</mapper>

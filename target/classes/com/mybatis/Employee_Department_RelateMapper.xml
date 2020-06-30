@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- com.dao.Empoyee_Department_RelateDao对应Dao接口 -->
+<mapper namespace = "com.dao.Employee_Department_RelateDao">
+
+    <select id = "queryDepartmentByEmployee" parameterType = "com.po.Employee" resultType = "com.po.Department">
+        select * from Department where no = (select department_no from Employee_Department_Relate where employee_no = #{no})
+    </select>
+
+    <select id = "queryEmployee_Department_RelatesByDepartment" resultType = "com.po.Employee_Department_Relate">
+        select * from Employee_Department_Relate where department_no = #{department.no} limit #{start}, #{end}
+    </select>
+
+    <insert id = "addEmployee_Department_Relate" parameterType = "com.po.Employee_Department_Relate">
+        insert into Employee_Department_Relate (employee_no, department_no) values (#{employee_no}, #{department_no})
+    </insert>
+
+    <delete id = "deleteEmployee_Department_RelateByEmployee" parameterType = "com.po.Employee">
+        delete from Employee_Department_Relate where employee_no = #{no}
+    </delete>
+
+    <delete id = "deleteEmployee_Department_RelatesByDepartment" parameterType = "com.po.Department">
+        delete from Employee_Department_Relate where department_no = #{no}
+    </delete>
+
+    <update id = "updateEmployee_Department_RelateDepartmentNoByEmployee" parameterType = "com.po.Employee_Department_Relate">
+        update Employee_Department_Relate set department_no = #{department_no} where employee_no = #{employee_no}
+    </update>
+
+</mapper>

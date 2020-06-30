@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- com.dao.Empoyee_Job_RelateDao对应Dao接口 -->
+<mapper namespace = "com.dao.Employee_Job_RelateDao">
+
+    <select id = "queryJobByEmployee" parameterType = "com.po.Employee" resultType = "com.po.Job">
+        select * from Job where no = (select job_no from Employee_Job_Relate where employee_no = #{no})
+    </select>
+
+    <select id = "queryEmployee_Job_RelatesByJob" resultType = "com.po.Employee_Job_Relate">
+        select * from Employee_Job_Relate where job_no = #{job.no} limit #{start}, #{end}
+    </select>
+
+    <insert id = "addEmployee_Job_Relate" parameterType = "com.po.Employee_Job_Relate">
+        insert into Employee_Job_Relate (employee_no, job_no) values (#{employee_no}, #{job_no})
+    </insert>
+
+    <delete id = "deleteEmployee_Job_RelateByEmployee" parameterType = "com.po.Employee">
+        delete from Employee_Job_Relate where employee_no = #{no}
+    </delete>
+
+    <delete id = "deleteEmployee_Job_RelatesByJob" parameterType = "com.po.Job">
+        delete from Employee_Job_Relate where job_no = #{no}
+    </delete>
+
+    <update id = "updateEmployee_Job_RelateJobNoByEmployee" parameterType = "com.po.Employee_Job_Relate">
+        update Employee_Job_Relate set job_no = #{job_no} where employee_no = #{employee_no}
+    </update>
+
+</mapper>

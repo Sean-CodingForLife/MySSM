@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- com.dao.EmployeeDao对应Dao接口 -->
+<mapper namespace = "com.dao.EmployeeDao">
+
+    <select id = "queryEmployeeByNo" resultType = "com.po.Employee">
+        select * from Employee where no = #{keyword}
+    </select>
+
+    <select id = "queryEmployees" resultType = "com.po.Employee">
+        select * from Employee limit #{start}, #{end}
+    </select>
+
+    <select id = "queryEmployeesCount" resultType = "Integer">
+        select count(*) from Employee
+    </select>
+
+    <select id = "queryEmployeesByName" resultType = "com.po.Employee">
+        select * from Employee where name like concat(#{keyword}, '%') limit #{start}, #{end}
+    </select>
+
+    <select id = "queryEmployeesCountByName" resultType = "Integer">
+        select count(*) from Employee where name like concat(#{keyword}, '%')
+    </select>
+
+    <select id = "queryEmployeesById" resultType = "com.po.Employee">
+        select * from Employee where id like concat(#{keyword}, '%') limit #{start}, #{end}
+    </select>
+
+    <select id = "queryEmployeesCountById" resultType = "Integer">
+        select count(*) from Employee where id like concat(#{keyword}, '%')
+    </select>
+
+    <select id = "queryEmployeesByPhone" resultType = "com.po.Employee">
+        select * from Employee where phone like concat(#{keyword}, '%') limit #{start}, #{end}
+    </select>
+
+    <select id = "queryEmployeesCountByPhone" resultType = "Integer">
+        select count(*) from Employee where phone like concat(#{keyword}, '%')
+    </select>
+
+    <select id = "queryEmployeesBySex" resultType = "com.po.Employee">
+        select * from Employee where sex = #{keyword} limit #{start}, #{end}
+    </select>
+
+    <select id = "queryEmployeesCountBySex" resultType = "Integer">
+        select count(*) from Employee where sex = #{keyword}
+    </select>
+    <insert id = "addEmployee" parameterType = "map">
+        insert into Employee (name, id, address, mail, phone, qq, email, sex, political_status, birthday, nation, education, major, hobby, description, created_date)
+        values (#{name}, #{id}, #{address}, #{mail}, #{phone}, #{QQ}, #{email}, #{sex}, #{political_status}, #{birthday}, #{nation}, #{education}, #{major}, #{hobby}, #{description}, now())
+    </insert>
+
+    <update id = "updateEmployee" parameterType = "map">
+        update Employee set name = #{name}, id = #{id}, address = #{address}, mail = #{mail}, phone = #{phone}, qq = #{qq}, email = #{email}, sex = #{sex}, political_status = #{political_status}, birthday = #{birthday}, nation = #{nation}, education = #[education}, major = #{major}, hobby = #{hobby}, description = #{description} where no = #{no}
+    </update>
+
+    <delete id = "deleteEmployee" parameterType = "com.po.Employee">
+        delete from Employee where no = #{no}
+    </delete>
+
+</mapper>

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!-- com.dao.NoticeDao对应Dao接口 -->
+<mapper namespace = "com.dao.NoticeDao">
+
+    <select id = "queryNotices" resultType = "com.po.Notice">
+        select * from Notice limit #{start}, #{end}
+    </select>
+
+    <select id = "queryNoticesCount" resultType = "Integer">
+        select count(*) from Notice
+    </select>
+
+    <select id = "queryNoticeByNo" resultType = "com.po.Notice">
+        select * from Notice where no = #{keyword}
+    </select>
+
+    <select id = "queryNoticesByTitle" resultType = "com.po.Notice">
+        select * from Notice where title like concat(#{keyword}, '%') limit #{start}, #{end}
+    </select>
+
+    <select id = "queryNoticesCountByTitle" resultType = "Integer">
+        select count(*) from Notice where title like concat(#{keyword}, '%')
+    </select>
+
+    <update id = "updateNotice" parameterType = "com.po.Notice">
+        update Notice set title = #{title}, content = #{content} where no = #{no}
+    </update>
+
+    <delete id = "deleteNotice" parameterType = "com.po.Notice">
+        delete from Notice where no = #{no}
+    </delete>
+
+    <insert id = "addNotice" parameterType = "com.po.Notice">
+        insert into Notice (title, content, created_date) values (#{title}, #{content}, now())
+    </insert>
+
+</mapper>
