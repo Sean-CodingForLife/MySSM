@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping("/job")
 public class JobController extends BaseController {
 
 	private final static String jobPageUrl = "admin/job/job";
@@ -27,12 +26,12 @@ public class JobController extends BaseController {
 	@Autowired
 	JobService jobService;
 
-	@GetMapping("/home")
+	@GetMapping("/admin/jobs")
 	public String toJobPage() {
 		return JobController.jobPageUrl;
 	}
 
-	@GetMapping("/jobs")
+	@GetMapping("/api/admin/jobs")
 	@ResponseBody
 	public ResponseData queryJobs(@RequestParam String keyword, @RequestParam Integer startPage,
 			@RequestParam Integer offset) {
@@ -40,20 +39,20 @@ public class JobController extends BaseController {
 		return jobService.queryJobs(keyword, startPage, offset);
 	}
 
-	@PostMapping("/job")
+	@PostMapping("/api/admin/jobs")
 	@ResponseBody
 	public Message addJob(@RequestBody Job job) {
 
 		return jobService.addJob(job);
 	}
 
-	@PutMapping("/job")
+	@PutMapping("/api/admin/jobs")
 	@ResponseBody
 	public Message updateJob(@RequestBody Job job) {
 		return jobService.updateJob(job);
 	}
 
-	@DeleteMapping("/jobs")
+	@DeleteMapping("/api/admin/jobs")
 	@ResponseBody
 	public Message deleteJob(@RequestBody List<Job> jobs) {
 		return jobService.deleteJobs(jobs);

@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping("/department")
 public class DepartmentController extends BaseController {
 
 	@Autowired
@@ -26,31 +25,31 @@ public class DepartmentController extends BaseController {
 
 	private final static String departmentPageUrl = "admin/department/department";
 
-	@GetMapping("/home")
+	@GetMapping("/admin/departments")
 	public String toDepartmentPage() {
 		return DepartmentController.departmentPageUrl;
 	}
 
-	@GetMapping("/departments")
+	@GetMapping("/api/admin/departments")
 	@ResponseBody
 	public ResponseData queryDepartments(@RequestParam String keyword, @RequestParam Integer startPage,
 			@RequestParam Integer offset) {
 		return departmentService.queryDepartments(keyword, startPage, offset);
 	}
 
-	@DeleteMapping("/departments")
+	@DeleteMapping("/api/admin/departments")
 	@ResponseBody
 	public Message deleteDepartments(@RequestBody List<Department> departments) {
 		return departmentService.deleteDepartments(departments);
 	}
 
-	@PutMapping("/department")
+	@PutMapping("/api/admin/departments")
 	@ResponseBody
 	public Message updateDepartment(@RequestBody Department department) {
 		return departmentService.updateDepartment(department);
 	}
 
-	@PostMapping("/department")
+	@PostMapping("/api/admin/departments")
 	@ResponseBody
 	public Message addDepartment(@RequestBody Department department) {
 		return departmentService.addDepartment(department);

@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping("/user")
 public class UserController extends BaseController {
 
 	@Autowired
@@ -24,19 +23,19 @@ public class UserController extends BaseController {
 
 	private final static String userPageUrl = "admin/user/user";
 
-	@GetMapping("/home")
+	@GetMapping("/admin/users")
 	public String toUserPage() {
 		return UserController.userPageUrl;
 	}
 
-	@GetMapping("/users")
+	@GetMapping("/api/admin/users")
 	@ResponseBody
 	public ResponseData queryUser(@RequestParam String keyword, @RequestParam String type, @RequestParam Integer startPage,
 			@RequestParam Integer offset) {
 		return userService.queryUsers(keyword, type, startPage, offset);
 	}
 
-	@DeleteMapping("/users")
+	@DeleteMapping("/api/admin/users")
 	@ResponseBody
 	public Message deleteUser(@RequestBody List<User> users) {
 		return userService.deleteUsers(users);

@@ -12,7 +12,7 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/requests.js"></script>
     <script type="text/javascript">
 
-        var getRequestParam = new GetRequestParam("notices", 1, 2, "", "");
+        var getRequestParam = new GetRequestParam("${pageContext.request.contextPath}/api/admin/notices", 1, 2, "", "");
 
         window.onload = function () {
             getRequest(getRequestParam);
@@ -39,7 +39,7 @@
             if (confirm("确定？")) {
                 var notices = getSelectedCheckbox(document.getElementsByName("selectOne"));
                 if (notices.length != 0) {
-                    deleteRequest("notices", notices, function () { alert("删除成功，来刷新一下吧"); });
+                    deleteRequest("${pageContext.request.contextPath}/api/admin/notices", notices, function () { alert("删除成功，来刷新一下吧"); });
                 } else {
                     alert("啥都没有选你就删？");
                 }
@@ -51,7 +51,7 @@
             var title = document.getElementById("title").value;
             var content = document.getElementById("content").value;
 
-            postRequest("notice", {
+            postRequest("${pageContext.request.contextPath}/api/admin/notices", {
                 title: title,
                 content: content
             }, function () { alert("添加成功，刷新一下吧"); });
@@ -70,7 +70,7 @@
                 no: no,
                 title: title,
                 content: content
-            }; putRequest("notice", data, function () { alert("更新成功，刷新一下吧"); });
+            }; putRequest("${pageContext.request.contextPath}/api/admin/notices", data, function () { alert("更新成功，刷新一下吧"); });
 
         }
 
@@ -145,7 +145,7 @@
         <a class="cancel" href="javascript:void(0)" onclick="cancelUpdate()">取消</a>
         <a class="show" href="javascript:void(0)" onclick="deleteNotice()">删除通知</a>
         <a class="show" href="javascript:void(0)" onclick="openPopBox()">添加通知</a>
-        <a class="show" href="../manager">返回</a>
+        <a class="show" href="${pageContext.request.contextPath}/admin/dashboard">返回</a>
         </div>
         <div>
             <ul class="pageBar">

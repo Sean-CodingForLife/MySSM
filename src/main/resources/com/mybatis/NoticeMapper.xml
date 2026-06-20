@@ -2,39 +2,38 @@
 <!DOCTYPE mapper
 PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<!-- com.dao.NoticeDao对应Dao接口 -->
-<mapper namespace = "com.dao.NoticeDao">
+<mapper namespace="com.dao.NoticeDao">
 
-    <select id = "queryNotices" resultType = "com.po.Notice">
-        select * from Notice limit #{start}, #{end}
+    <select id="queryNotices" resultType="com.po.Notice">
+        select * from notice limit #{start}, #{end}
     </select>
 
-    <select id = "queryNoticesCount" resultType = "Integer">
-        select count(*) from Notice
+    <select id="queryNoticesCount" resultType="Integer">
+        select count(*) from notice
     </select>
 
-    <select id = "queryNoticeByNo" resultType = "com.po.Notice">
-        select * from Notice where no = #{keyword}
+    <select id="queryNoticeByNo" resultType="com.po.Notice">
+        select * from notice where no = #{keyword}
     </select>
 
-    <select id = "queryNoticesByTitle" resultType = "com.po.Notice">
-        select * from Notice where title like concat(#{keyword}, '%') limit #{start}, #{end}
+    <select id="queryNoticesByTitle" resultType="com.po.Notice">
+        select * from notice where title like concat(#{keyword}, '%') limit #{start}, #{end}
     </select>
 
-    <select id = "queryNoticesCountByTitle" resultType = "Integer">
-        select count(*) from Notice where title like concat(#{keyword}, '%')
+    <select id="queryNoticesCountByTitle" resultType="Integer">
+        select count(*) from notice where title like concat(#{keyword}, '%')
     </select>
 
-    <update id = "updateNotice" parameterType = "com.po.Notice">
-        update Notice set title = #{title}, content = #{content} where no = #{no}
+    <update id="updateNotice" parameterType="com.po.Notice">
+        update notice set title = #{title}, content = #{content} where no = #{no}
     </update>
 
-    <delete id = "deleteNotice" parameterType = "com.po.Notice">
-        delete from Notice where no = #{no}
+    <delete id="deleteNotice" parameterType="com.po.Notice">
+        delete from notice where no = #{no}
     </delete>
 
-    <insert id = "addNotice" parameterType = "com.po.Notice">
-        insert into Notice (title, content, created_date) values (#{title}, #{content}, now())
+    <insert id="addNotice" parameterType="com.po.Notice">
+        insert into notice (title, content, created_date) values (#{title}, #{content}, now())
     </insert>
 
 </mapper>

@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping("/notice")
 public class NoticeController extends BaseController {
 
 	private final static String noticePageUrl = "admin/notice/notice";
@@ -28,12 +27,12 @@ public class NoticeController extends BaseController {
 	@Autowired
 	NoticeService noticeService;
 
-	@GetMapping("/home")
+	@GetMapping("/admin/notices")
 	public String toNoticePage() {
 		return NoticeController.noticePageUrl;
 	}
 
-	@PostMapping("/notice")
+	@PostMapping("/api/admin/notices")
 	@ResponseBody
 	public Message addNotice(@RequestBody Notice notice, HttpSession session) {
 
@@ -42,21 +41,21 @@ public class NoticeController extends BaseController {
 		return noticeService.addNotice(notice, adminUserAccount);
 	}
 
-	@GetMapping("/notices")
+	@GetMapping("/api/admin/notices")
 	@ResponseBody
 	public ResponseData queryNotice(@RequestParam String keyword, @RequestParam String type, @RequestParam Integer startPage,
 			@RequestParam Integer offset) {
 		return noticeService.queryNotices(keyword, type, startPage, offset);
 	}
 
-	@DeleteMapping("/notices")
+	@DeleteMapping("/api/admin/notices")
 	@ResponseBody
 	public Message deleteNotice(@RequestBody List<Notice> notices) {
 		return noticeService.deleteNotices(notices);
 
 	}
 
-	@PutMapping("/notice")
+	@PutMapping("/api/admin/notices")
 	@ResponseBody
 	public Message updateNotice(@RequestBody Notice notice, HttpSession session) {
 		String adminUserAccount = (String) session.getAttribute("adminUserAccount");

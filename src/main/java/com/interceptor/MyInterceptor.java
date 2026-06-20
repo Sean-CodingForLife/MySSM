@@ -5,9 +5,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import com.myTool.MyTokenTool;
 
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
+import org.springframework.web.servlet.HandlerInterceptor;
 
-public class MyInterceptor extends HandlerInterceptorAdapter {
+public class MyInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -20,13 +20,16 @@ public class MyInterceptor extends HandlerInterceptorAdapter {
             return true;
         }
 
-        if (isAdminPath(path)) {
-            return allowOrRedirect(MyTokenTool.checkToken("admin", request), request, response);
+        if (path.equals("/admin/dashboard")) {
+            return allowOrRedirect(MyTokenTool.checkToken("admin", request), request, response, "/admin/login");
         }
 
-        if (path.equals("/manager")) {
-            boolean loggedIn = MyTokenTool.checkToken("admin", request) || MyTokenTool.checkToken("user", request);
-            return allowOrRedirect(loggedIn, request, response);
+        if (path.equals("/user/dashboard")) {
+            return allowOrRedirect(MyTokenTool.checkToken("user", request), request, response, "/user/login");
+        }
+
+        if (isAdminPath(path)) {
+            return allowOrRedirect(MyTokenTool.checkToken("admin", request), request, response, "/admin/login");
         }
 
         return true;
@@ -35,27 +38,33 @@ public class MyInterceptor extends HandlerInterceptorAdapter {
     private boolean isPublicPath(String path) {
         return path.equals("/")
                 || path.equals("/index.jsp")
-                || path.startsWith("/login")
-                || path.startsWith("/register")
+                || path.equals("/admin/login")
+                || path.equals("/user/login")
+                || path.equals("/user/register")
+                || path.equals("/api/admin/session")
+                || path.equals("/api/user/session")
+                || path.equals("/api/public/users")
                 || path.startsWith("/js/")
                 || path.startsWith("/css/");
     }
 
     private boolean isAdminPath(String path) {
-        return path.startsWith("/user/")
-                || path.startsWith("/department/")
-                || path.startsWith("/job/")
-                || path.startsWith("/document/")
-                || path.startsWith("/employee/")
-                || path.startsWith("/notice/");
+        return path.startsWith("/admin/")
+                || path.startsWith("/api/admin/");
     }
 
     private boolean allowOrRedirect(boolean allowed, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
+        return allowOrRedirect(allowed, request, response, "/user/login");
+    }
+
+    private boolean allowOrRedirect(boolean allowed, HttpServletRequest request, HttpServletResponse response,
+            String loginPath)
+            throws Exception {
         if (allowed) {
             return true;
         }
-        response.sendRedirect(request.getContextPath() + "/login/admin");
+        response.sendRedirect(request.getContextPath() + loginPath);
         return false;
     }
     

@@ -13,7 +13,6 @@ import com.po.User;
 import com.service.UserService;
 
 @Controller
-@RequestMapping("/register")
 public class RegisterController {
 
 	@Autowired
@@ -21,13 +20,13 @@ public class RegisterController {
 
 	private final static String userRegisterPageUrl = "user/register";
 
-	@GetMapping
+	@GetMapping("/user/register")
 	public String toRegisterPage() {
 
 		return RegisterController.userRegisterPageUrl;
 	}
 
-	@PostMapping
+	@PostMapping("/api/public/users")
 	@ResponseBody
 	public Message register(@RequestBody User user) {
 

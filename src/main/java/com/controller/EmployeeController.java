@@ -20,7 +20,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 @Controller
-@RequestMapping("/employee")
 public class EmployeeController extends BaseController {
 
 	@Autowired
@@ -28,30 +27,30 @@ public class EmployeeController extends BaseController {
 
 	private final static String employeePageUrl = "admin/employee/employee";
 	
-	@GetMapping("/home")
+	@GetMapping("/admin/employees")
 	public String toEmployeePage() {
 		return EmployeeController.employeePageUrl;
 	}
 
-	@GetMapping("/employees")
+	@GetMapping("/api/admin/employees")
 	@ResponseBody
 	public ResponseData queryEmployees(@RequestParam String keyword, @RequestParam String type, @RequestParam Integer startPage, @RequestParam Integer offset) {
 		return employeeService.queryEmployees(keyword, type, startPage, offset);
 	}
 
-	@DeleteMapping("/employees")
+	@DeleteMapping("/api/admin/employees")
 	@ResponseBody
 	public Message deleteEmployees(@RequestBody List<Employee> employees) {
 		return employeeService.deleteEmployees(employees);
 	}
 
-	@PostMapping("/employee")
+	@PostMapping("/api/admin/employees")
 	@ResponseBody
 	public Message addEmployee(@RequestBody Map<String, Object> map) {
 		return employeeService.addEmployee(map);
 	}
 
-	@PutMapping("/employee")
+	@PutMapping("/api/admin/employees")
 	@ResponseBody
 	public Message updateEmployee(@RequestBody Map<String, Object> map) {
 		return employeeService.updateEmployee(map);

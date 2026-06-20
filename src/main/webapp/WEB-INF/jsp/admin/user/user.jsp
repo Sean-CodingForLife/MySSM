@@ -15,7 +15,7 @@
 	<script type="text/javascript" src="${pageContext.request.contextPath}/js/requests.js"></script>
 	<script type="text/javascript">
 
-		var getRequestParam = new GetRequestParam("users", 1, 10, "", "");
+		var getRequestParam = new GetRequestParam("${pageContext.request.contextPath}/api/admin/users", 1, 10, "", "");
 
 		window.onload = function () {
 			getRequest(getRequestParam);
@@ -46,7 +46,7 @@
 
 				if (users.length != 0) {
 
-					deleteRequest("users", users, function () { alert("删除成功，来刷新一下吧"); });
+					deleteRequest("${pageContext.request.contextPath}/api/admin/users", users, function () { alert("删除成功，来刷新一下吧"); });
 
 				} else {
 					alert("啥都没选你就删？")
@@ -98,7 +98,7 @@
 	</div>
 	<div class="operationBar">
 		<a href="javascript:void(0)" onclick="deleteUser()">删除用户</a>
-		<a href="../manager">返回</a>
+		<a href="${pageContext.request.contextPath}/admin/dashboard">返回</a>
 	</div>
 	<div>
 		<ul class="pageBar">

@@ -5,11 +5,10 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.message.Message;
@@ -20,7 +19,6 @@ import com.service.AdminUserService;
 import com.service.UserService;
 
 @Controller
-@RequestMapping("/login")
 public class LoginController extends BaseController {
 
 	@Autowired
@@ -32,28 +30,28 @@ public class LoginController extends BaseController {
 	private final static String adminLoginPageUrl = "/admin/login";
 	private final static String userLoginPageUrl = "/user/login";
 
-	@GetMapping("/{type}")
-	public String toLoginPage(@PathVariable String type) {
-
-		if (type.equals("admin")) {
-			return LoginController.adminLoginPageUrl;
-		} else if (type.equals("user")) {
-			return LoginController.userLoginPageUrl;
-		}
-		return BaseController.ErrorPage;
+	@GetMapping("/admin/login")
+	public String toAdminLoginPage() {
+		return LoginController.adminLoginPageUrl;
 	}
 
-	@PostMapping("/user")
+	@GetMapping("/user/login")
+	public String toUserLoginPage() {
+		return LoginController.userLoginPageUrl;
+	}
+
+	@PostMapping("/api/user/session")
 	@ResponseBody
 	public Message login(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
 		Message message = userService.login(user);
 		if (message.getFlag()) {
+			request.getSession().setAttribute("userAccount", user.getAccount());
 			MyTokenTool.addToken("user", request, response);
 		}
 		return message;
 	}
 
-	@PostMapping("/admin")
+	@PostMapping("/api/admin/session")
 	@ResponseBody
 	public Message login(@RequestBody AdminUser adminUser, HttpServletRequest request, HttpServletResponse response) {
 
@@ -63,6 +61,20 @@ public class LoginController extends BaseController {
 			MyTokenTool.addToken("admin", request, response);
 		}
 		return message;
+	}
+
+	@DeleteMapping("/api/admin/session")
+	@ResponseBody
+	public Message logoutAdmin(HttpServletRequest request, HttpServletResponse response) {
+		MyTokenTool.removeToken("admin", request, response);
+		return Message.success;
+	}
+
+	@DeleteMapping("/api/user/session")
+	@ResponseBody
+	public Message logoutUser(HttpServletRequest request, HttpServletResponse response) {
+		MyTokenTool.removeToken("user", request, response);
+		return Message.success;
 	}
 
 }

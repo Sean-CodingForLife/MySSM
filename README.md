@@ -18,10 +18,12 @@ The project was originally written as an Eclipse/Tomcat style Java Web project. 
 ## Tech Stack
 
 - Java 8 source/target compatibility
-- Spring Framework 5.0.2
+- Spring Framework 5.3.39
 - Spring MVC
-- MyBatis 3.4.5
-- MyBatis-Spring 1.3.1
+- MyBatis 3.5.16
+- MyBatis-Spring 2.1.2
+- Jackson 2.13.5
+- SLF4J 1.7 + Logback 1.2
 - JSP + JSTL
 - MySQL
 - Maven
@@ -48,7 +50,7 @@ MySSM/
   src/main/resources/
     applicationContext.xml
     jdbc.properties
-    log4j.properties
+    logback.xml
     com/mybatis/
   src/main/webapp/
     WEB-INF/
@@ -88,8 +90,8 @@ src/main/resources/jdbc.properties
 Example:
 
 ```properties
-jdbc.driver=com.mysql.jdbc.Driver
-jdbc.url=jdbc:mysql://localhost:3306/HM?characterEncoding=utf8
+jdbc.driver=com.mysql.cj.jdbc.Driver
+jdbc.url=jdbc:mysql://localhost:3306/myssm_personnel?characterEncoding=utf8
 jdbc.username=root
 jdbc.password=your_password
 jdbc.maxTotal=30
@@ -122,20 +124,35 @@ The password is stored as an MD5 value because the original login page hashes th
 7. Set Context Path to:
 
    ```text
-   /xpf
+   /myssm
    ```
 
 8. Use port `8080`, or change to `8081` if `8080` is occupied.
 9. Start Tomcat and visit:
 
    ```text
-   http://localhost:8080/xpf
+   http://localhost:8080/myssm
    ```
+
+Main routes:
+
+```text
+GET  /admin/login
+POST /api/admin/session
+GET  /admin/dashboard
+GET  /user/login
+GET  /user/register
+POST /api/public/users
+POST /api/user/session
+GET  /user/dashboard
+```
+
+Admin pages are under `/admin/...`; admin JSON APIs are under `/api/admin/...`. Only the routes listed here are supported.
 
 If using port `8081`, visit:
 
 ```text
-http://localhost:8081/xpf
+http://localhost:8081/myssm
 ```
 
 ## Build With Maven
@@ -147,7 +164,7 @@ mvn clean package
 The generated WAR file is:
 
 ```text
-target/xpf.war
+target/myssm.war
 ```
 
 Deploy it to Tomcat's `webapps` directory if you prefer manual deployment.
@@ -175,13 +192,13 @@ Use Tomcat 8.5 or 9. This project depends on `javax.servlet`.
 Check:
 
 - MySQL is running
-- Database `HM` exists
+- Database `myssm_personnel` exists
 - `jdbc.username` and `jdbc.password` are correct
 - `database/schema.sql` has been executed
 
-### SLF4J StaticLoggerBinder warning
+### Dependency version mismatch
 
-The project currently includes `slf4j-api` but no SLF4J binding. This warning does not block startup. The legacy project still uses Log4j 1.x.
+Reload Maven after pulling dependency changes. This project intentionally stays on Spring 5.x and `javax.servlet.*` for Tomcat 8.5/9 compatibility. Do not mix in Spring 6.x or `jakarta.servlet.*` dependencies unless the whole project is migrated to Tomcat 10+.
 
 ## Notes
 
@@ -192,4 +209,3 @@ This is still a legacy SSM/JSP project. The current goal is to make it reproduci
 - Improve authentication and authorization
 - Convert to Spring Boot
 - Split frontend and backend
-

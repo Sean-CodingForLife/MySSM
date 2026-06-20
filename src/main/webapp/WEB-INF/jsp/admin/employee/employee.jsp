@@ -13,7 +13,7 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/requests.js"></script>
     <script type="text/javascript">
 
-        var getRequestParam = new GetRequestParam("employees", 1, 10, "", "");
+        var getRequestParam = new GetRequestParam("${pageContext.request.contextPath}/api/admin/employees", 1, 10, "", "");
 
         window.onload = function () {
             getRequest(getRequestParam);
@@ -38,7 +38,7 @@
             if (confirm("确定?")) {
                  var employees = getSelectedCheckbox(document.getElementsByName("selectOne"));
                 if (employees.length != 0) {
-                    deleteRequest("employees", employees, function () { alert("删除成功，来刷新一下吧"); });
+                    deleteRequest("${pageContext.request.contextPath}/api/admin/employees", employees, function () { alert("删除成功，来刷新一下吧"); });
                 } else {
                     alert("哈都没有选你就删？");
                 }
@@ -92,7 +92,7 @@
             getSelectedOption(document.getElementById("jobSelector")),
             getSelectedOption(document.getElementById("departmentSelector")));
             
-            postRequest("employee", data, function () { alert("添加成功，刷新一下吧"); });
+            postRequest("${pageContext.request.contextPath}/api/admin/employees", data, function () { alert("添加成功，刷新一下吧"); });
 
         }
 
@@ -119,7 +119,7 @@
                 activeRow.cells[16].getElementsByTagName("input")[0].value,
                 activeRow.cells[17].getElementsByTagName("input")[0].value,
                 activeRow.cells[18].getElementsByTagName("input")[0].value);
-                putRequest("employee", data, function () { alert("更新成功，刷新一下吧"); });
+                putRequest("${pageContext.request.contextPath}/api/admin/employees", data, function () { alert("更新成功，刷新一下吧"); });
 
         }
 
@@ -252,7 +252,7 @@
         <a class="cancel" href="javascript:void(0)" onclick="cancelUpdate()">取消</a>
         <a id = "deleteJob"class="show" href="javascript:void(0)" onclick="deleteEmployee()">删除员工</a>
         <a id = "addJob"   class="show" href="javascript:void(0)" onclick="openPopBox()">添加员工</a>
-        <a class="show" href="../manager">返回</a>
+        <a class="show" href="${pageContext.request.contextPath}/admin/dashboard">返回</a>
         </div>
         <div>
             <ul class="pageBar">
@@ -275,7 +275,7 @@
                 var addJob             = document.getElementById("addJob");
                 addJob.addEventListener("click", function () {
                     $.ajax({
-                        url: "../job/jobs?keyword=&startPage=&offset=",
+                        url: "${pageContext.request.contextPath}/api/admin/jobs?keyword=&startPage=&offset=",
                         type: "get",
                         contentType: "application/json;charset=utf-8",
                         dataType: "json",
@@ -296,7 +296,7 @@
                         }
                     });
                     $.ajax({
-                        url: "../department/departments?keyword=&startPage=&offset=",
+                        url: "${pageContext.request.contextPath}/api/admin/departments?keyword=&startPage=&offset=",
                         type: "get",
                         contentType: "application/json;charset=utf-8",
                         dataType: "json",

@@ -13,7 +13,7 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/requests.js"></script>
     <script type="text/javascript">
 
-        var getRequestParam = new GetRequestParam("jobs", 1, 10, "");
+        var getRequestParam = new GetRequestParam("${pageContext.request.contextPath}/api/admin/jobs", 1, 10, "");
 
         window.onload = function () {
             getRequest(getRequestParam);
@@ -30,7 +30,7 @@
             if (confirm("确定？")) {
                 var jobs = getSelectedCheckbox(document.getElementsByName("selectOne"));
                 if (jobs.length != 0) {
-                    deleteRequest("jobs", jobs, function () { alert("删除成功，来刷新一下吧"); });
+                    deleteRequest("${pageContext.request.contextPath}/api/admin/jobs", jobs, function () { alert("删除成功，来刷新一下吧"); });
                 } else {
                     alert("啥都没有选你就删？")
                 }
@@ -42,7 +42,7 @@
             var name = document.getElementById("name").value;
             var description = document.getElementById("description").value;
 
-            postRequest("job", {
+            postRequest("${pageContext.request.contextPath}/api/admin/jobs", {
                 name: name,
                 description: description
             }, function () { alert("添加成功，刷新一下吧"); });
@@ -61,7 +61,7 @@
                 no: no,
                 name: name,
                 description: description
-            }; putRequest("job", data, function () { alert("更新成功，刷新一下吧"); });
+            }; putRequest("${pageContext.request.contextPath}/api/admin/jobs", data, function () { alert("更新成功，刷新一下吧"); });
 
         }
 
@@ -118,7 +118,7 @@
         <a class="cancel" href="javascript:void(0)" onclick="cancelUpdate()">取消</a>
         <a class="show" href="javascript:void(0)" onclick="deleteJob()">删除职位</a>
         <a class="show" href="javascript:void(0)" onclick="openPopBox()">添加职位</a>
-        <a class="show" href="../manager">返回</a>
+        <a class="show" href="${pageContext.request.contextPath}/admin/dashboard">返回</a>
         </div>
         <div>
             <ul class="pageBar">
