@@ -4,13 +4,15 @@
 <html>
 <head>
     <title><spring:message code="error.notFound.title"/></title>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/my.css" />
+    <%@ include file="common/assets.jsp" %>
 </head>
 <body>
-<main class="auth-panel">
-    <h1><spring:message code="error.notFound.title"/></h1>
-    <p><spring:message code="error.notFound.text"/></p>
-    <p><a class="button-link primary" href="${pageContext.request.contextPath}/"><spring:message code="error.backHome"/></a></p>
+<main class="auth-panel card">
+    <div class="card-body">
+        <h1 class="h3"><spring:message code="error.notFound.title"/></h1>
+        <p class="text-secondary"><spring:message code="error.notFound.text"/></p>
+        <a class="btn btn-primary w-100" href="${pageContext.request.contextPath}/"><spring:message code="error.backHome"/></a>
+    </div>
 </main>
 </body>
 </html>

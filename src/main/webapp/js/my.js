@@ -82,6 +82,7 @@ function renderTable(rows, columns, options) {
             var selectCell = document.createElement("td");
             var checkbox = document.createElement("input");
             checkbox.type = "checkbox";
+            checkbox.className = "form-check-input";
             checkbox.name = "selectOne";
             checkbox.value = row.id;
             selectCell.appendChild(checkbox);
@@ -91,12 +92,37 @@ function renderTable(rows, columns, options) {
         columns.forEach(function (column) {
             var td = document.createElement("td");
             td.setAttribute("data-key", column.key);
-            td.textContent = displayValue(row[column.key], column);
+            if (column.key === "role" || column.key === "status") {
+                td.appendChild(createBadge(row[column.key], column));
+            } else {
+                td.textContent = displayValue(row[column.key], column);
+            }
             tr.appendChild(td);
         });
 
         tbody.appendChild(tr);
     });
+}
+
+function createBadge(value, column) {
+    var badge = document.createElement("span");
+    var text = displayValue(value, column);
+    var tone = "text-bg-secondary";
+    if (column.key === "role" && value === "ADMIN") {
+        tone = "text-bg-primary";
+    }
+    if (column.key === "role" && value === "USER") {
+        tone = "text-bg-info";
+    }
+    if (column.key === "status" && value === "ACTIVE") {
+        tone = "text-bg-success";
+    }
+    if (column.key === "status" && value === "DISABLED") {
+        tone = "text-bg-secondary";
+    }
+    badge.className = "badge rounded-pill " + tone;
+    badge.textContent = text;
+    return badge;
 }
 
 function setEmptyState(isEmpty, text) {
@@ -119,12 +145,22 @@ function drawPageBar(count, state, columns, options) {
 
     function appendButton(label, page, disabled, active) {
         var li = document.createElement("li");
-        li.className = active ? "page-item-active" : "page-item";
+        var link = document.createElement("button");
+        li.className = "page-item";
         if (disabled) {
             li.className += " disabled";
         }
+        if (active) {
+            li.className += " active";
+        }
         li.setAttribute("data-page", page);
-        li.textContent = label;
+        link.className = "page-link";
+        link.type = "button";
+        link.textContent = label;
+        if (disabled) {
+            link.disabled = true;
+        }
+        li.appendChild(link);
         pageBar.appendChild(li);
     }
 
@@ -137,8 +173,8 @@ function drawPageBar(count, state, columns, options) {
     }
     appendButton(nextText, Math.min(maxPage, state.page + 1), state.page >= maxPage, false);
 
-    $(pageBar).off("click").on("click", "li", function () {
-        if ($(this).hasClass("disabled") || $(this).hasClass("page-item-active")) {
+    $(pageBar).off("click").on("click", ".page-item", function () {
+        if ($(this).hasClass("disabled") || $(this).hasClass("active")) {
             return;
         }
         state.page = Number($(this).attr("data-page"));
@@ -173,6 +209,7 @@ function beginRowEdit(row, columns) {
 
         var input = document.createElement("input");
         input.type = column.inputType || "text";
+        input.className = "form-control form-control-sm";
         input.value = cell.textContent;
         input.setAttribute("data-edit-key", column.key);
         cell.textContent = "";
@@ -253,11 +290,17 @@ function selectAll() {
 }
 
 function openPopBox() {
-    $(".light, .fade").show();
+    var modalElement = document.getElementById("userModal");
+    if (modalElement && window.bootstrap) {
+        bootstrap.Modal.getOrCreateInstance(modalElement).show();
+    }
 }
 
 function closePopBox() {
-    $(".light, .fade").hide();
+    var modalElement = document.getElementById("userModal");
+    if (modalElement && window.bootstrap) {
+        bootstrap.Modal.getOrCreateInstance(modalElement).hide();
+    }
 }
 
 function clearForm(selector) {
@@ -276,7 +319,7 @@ function formData(selector) {
 function requireSelection(rows, label) {
     if (!rows.length) {
         var template = (window.I18N && window.I18N.selectRequired) || "Please select at least one {0}.";
-        alert(template.replace("{0}", label));
+        notifyApp(template.replace("{0}", label), "error");
         return false;
     }
     return true;

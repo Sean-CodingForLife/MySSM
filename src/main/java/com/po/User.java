@@ -6,6 +6,7 @@ public class User {
     private Integer id;
     private String  account;
     private String  password;
+    private String  captcha;
     private String  name;
     private String  role;
     private String  status;
@@ -33,6 +34,14 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getCaptcha() {
+        return captcha;
+    }
+
+    public void setCaptcha(String captcha) {
+        this.captcha = captcha;
     }
 
     public String getName() {

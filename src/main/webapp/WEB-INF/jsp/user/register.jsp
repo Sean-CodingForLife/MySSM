@@ -4,9 +4,7 @@
 <html>
 <head>
     <title><spring:message code="auth.signup"/></title>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/my.css" />
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/requests.js"></script>
+    <%@ include file="../common/assets.jsp" %>
     <script type="text/javascript">
         window.I18N = {
             registerRequired: "<spring:message code="auth.required.register"/>",
@@ -22,15 +20,15 @@
             var repeatedPassword = $("#repassword").val();
 
             if (!account || !name || !password) {
-                alert(window.I18N.registerRequired);
+                notifyApp(window.I18N.registerRequired, "error");
                 return;
             }
             if (password.length < 8) {
-                alert(window.I18N.passwordMin);
+                notifyApp(window.I18N.passwordMin, "error");
                 return;
             }
             if (password !== repeatedPassword) {
-                alert(window.I18N.passwordMismatch);
+                notifyApp(window.I18N.passwordMismatch, "error");
                 return;
             }
 
@@ -45,32 +43,38 @@
     </script>
 </head>
 <body>
-<main class="auth-panel">
-    <h1><spring:message code="auth.signup"/></h1>
-    <nav class="language-switch">
-        <a href="?lang=zh-CN"><spring:message code="language.zh"/></a>
-        <a href="?lang=en-US"><spring:message code="language.en"/></a>
-    </nav>
-    <form action="">
-        <div class="field">
-            <label for="account"><spring:message code="auth.account"/></label>
-            <input type="text" id="account" autocomplete="username" />
+<main class="auth-panel card">
+    <div class="card-body">
+        <div class="d-flex align-items-start justify-content-between gap-3 mb-4">
+            <h1 class="h3 mb-0"><spring:message code="auth.signup"/></h1>
+            <nav class="language-switch">
+                <a href="?lang=zh-CN"><spring:message code="language.zh"/></a>
+                <a href="?lang=en-US"><spring:message code="language.en"/></a>
+            </nav>
         </div>
-        <div class="field">
-            <label for="name"><spring:message code="auth.name"/></label>
-            <input type="text" id="name" />
-        </div>
-        <div class="field">
-            <label for="password"><spring:message code="auth.password"/></label>
-            <input type="password" id="password" autocomplete="new-password" />
-        </div>
-        <div class="field">
-            <label for="repassword"><spring:message code="auth.repeatPassword"/></label>
-            <input type="password" id="repassword" autocomplete="new-password" />
-        </div>
-        <button class="primary" type="button" onclick="register()"><spring:message code="auth.signup"/></button>
-    </form>
-    <p><a href="${pageContext.request.contextPath}/"><spring:message code="common.back"/></a></p>
+        <form action="" onsubmit="register(); return false;">
+            <div class="mb-3">
+                <label class="form-label" for="account"><spring:message code="auth.account"/></label>
+                <input class="form-control" type="text" id="account" autocomplete="username" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="name"><spring:message code="auth.name"/></label>
+                <input class="form-control" type="text" id="name" />
+            </div>
+            <div class="mb-3">
+                <label class="form-label" for="password"><spring:message code="auth.password"/></label>
+                <input class="form-control" type="password" id="password" autocomplete="new-password" />
+            </div>
+            <div class="mb-4">
+                <label class="form-label" for="repassword"><spring:message code="auth.repeatPassword"/></label>
+                <input class="form-control" type="password" id="repassword" autocomplete="new-password" />
+            </div>
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary" type="submit"><spring:message code="auth.signup"/></button>
+                <a class="btn btn-outline-secondary" href="${pageContext.request.contextPath}/"><spring:message code="common.back"/></a>
+            </div>
+        </form>
+    </div>
 </main>
 </body>
 </html>

@@ -19,6 +19,7 @@ public enum Message implements Jsonable {
     loginSuccess("message.login.success", "Login succeeded.", true),
     loginFail_Password("message.login.password", "Login failed: incorrect password.", false),
     loginFail_Account("message.login.account", "Login failed: account not found.", false),
+    captchaFail("message.captcha.fail", "Captcha verification failed.", false),
     registerSuccess("message.register.success", "Registration succeeded.", true),
     registerFail("message.register.fail", "Registration failed.", false),
     fail("message.operation.fail", "Operation failed.", false),

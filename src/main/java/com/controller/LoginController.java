@@ -14,6 +14,7 @@ import com.message.Message;
 import com.myTool.MyTokenTool;
 import com.po.User;
 import com.service.UserService;
+import com.wf.captcha.utils.CaptchaUtil;
 
 @Controller
 public class LoginController extends BaseController {
@@ -24,6 +25,12 @@ public class LoginController extends BaseController {
 	@PostMapping("/api/session")
 	@ResponseBody
 	public Message login(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+		if (!CaptchaUtil.ver(user.getCaptcha(), request)) {
+			CaptchaUtil.clear(request);
+			return Message.captchaFail;
+		}
+		CaptchaUtil.clear(request);
+
 		User loginUser = userService.login(user);
 		if (loginUser == null) {
 			if (userService.accountExists(user.getAccount())) {

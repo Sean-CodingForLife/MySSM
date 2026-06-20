@@ -4,29 +4,24 @@
 <html>
 <head>
     <title><spring:message code="user.messages.title"/></title>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/my.css" />
+    <%@ include file="../common/assets.jsp" %>
 </head>
 <body>
-<main class="app-shell">
-    <header class="page-header">
+<spring:message code="user.messages.title" var="pageTitle"/>
+<% request.setAttribute("activeNav", "messages"); %>
+<%@ include file="../common/app-shell-start.jsp" %>
+    <header class="content-header">
         <div>
-            <h1 class="page-title"><spring:message code="user.messages.title"/></h1>
-            <p class="breadcrumb"><spring:message code="user.messages.breadcrumb"/></p>
-        </div>
-        <div class="page-actions">
-            <nav class="language-switch">
-                <a href="?lang=zh-CN"><spring:message code="language.zh"/></a>
-                <a href="?lang=en-US"><spring:message code="language.en"/></a>
-            </nav>
-            <a class="button-link" href="${pageContext.request.contextPath}/dashboard"><spring:message code="common.back"/></a>
+            <h1><spring:message code="user.messages.title"/></h1>
+            <p><spring:message code="user.messages.breadcrumb"/></p>
         </div>
     </header>
 
-    <section class="table-panel">
+    <section class="card table-panel">
         <div class="empty-state visible">
             <spring:message code="user.messages.empty"/>
         </div>
     </section>
-</main>
+<%@ include file="../common/app-shell-end.jsp" %>
 </body>
 </html>

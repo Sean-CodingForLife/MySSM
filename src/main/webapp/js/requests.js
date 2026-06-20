@@ -5,6 +5,10 @@ function responseMessage(data, fallback) {
     return fallback || (window.I18N && window.I18N.requestFailed) || "Request failed.";
 }
 
+function showMessage(message, type) {
+    notifyApp(message, type);
+}
+
 function apiRequest(method, url, data, success, options) {
     var requestOptions = options || {};
     var ajaxOptions = {
@@ -15,12 +19,15 @@ function apiRequest(method, url, data, success, options) {
         cache: false,
         success: function (response) {
             if (response && response.flag === false) {
-                alert(responseMessage(response));
+                showMessage(responseMessage(response), "error");
+                if (typeof requestOptions.onFail === "function") {
+                    requestOptions.onFail(response);
+                }
                 return;
             }
 
             if (!requestOptions.quiet && response && response.message) {
-                alert(response.message);
+                showMessage(response.message, "success");
             }
 
             if (typeof success === "function") {
@@ -35,7 +42,10 @@ function apiRequest(method, url, data, success, options) {
             if (xhr && xhr.status) {
                 message = xhr.status + " " + (xhr.statusText || "") + "\n" + message;
             }
-            alert(message);
+            showMessage(message, "error");
+            if (typeof requestOptions.onError === "function") {
+                requestOptions.onError(xhr);
+            }
         }
     };
 
@@ -50,8 +60,8 @@ function getJson(url, success) {
     return apiRequest("get", url, null, success, { quiet: true });
 }
 
-function postRequest(url, data, success) {
-    return apiRequest("post", url, data, success);
+function postRequest(url, data, success, options) {
+    return apiRequest("post", url, data, success, options);
 }
 
 function putRequest(url, data, success) {

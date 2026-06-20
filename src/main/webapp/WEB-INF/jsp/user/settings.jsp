@@ -4,26 +4,21 @@
 <html>
 <head>
     <title><spring:message code="user.settings.title"/></title>
-    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/my.css" />
+    <%@ include file="../common/assets.jsp" %>
 </head>
 <body>
-<main class="app-shell">
-    <header class="page-header">
+<spring:message code="user.settings.title" var="pageTitle"/>
+<% request.setAttribute("activeNav", "settings"); %>
+<%@ include file="../common/app-shell-start.jsp" %>
+    <header class="content-header">
         <div>
-            <h1 class="page-title"><spring:message code="user.settings.title"/></h1>
-            <p class="breadcrumb"><spring:message code="user.settings.breadcrumb"/></p>
-        </div>
-        <div class="page-actions">
-            <nav class="language-switch">
-                <a href="?lang=zh-CN"><spring:message code="language.zh"/></a>
-                <a href="?lang=en-US"><spring:message code="language.en"/></a>
-            </nav>
-            <a class="button-link" href="${pageContext.request.contextPath}/dashboard"><spring:message code="common.back"/></a>
+            <h1><spring:message code="user.settings.title"/></h1>
+            <p><spring:message code="user.settings.breadcrumb"/></p>
         </div>
     </header>
 
-    <section class="table-panel">
-        <table class="data-table">
+    <section class="card table-panel">
+        <table class="table align-middle mb-0">
             <tbody>
             <tr>
                 <th><spring:message code="user.sessionAccount"/></th>
@@ -40,6 +35,6 @@
             </tbody>
         </table>
     </section>
-</main>
+<%@ include file="../common/app-shell-end.jsp" %>
 </body>
 </html>

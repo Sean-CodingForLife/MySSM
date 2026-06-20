@@ -38,6 +38,7 @@ public class MyInterceptor implements HandlerInterceptor {
     private boolean isPublicPath(String path) {
         return path.equals("/")
                 || path.equals("/user/register")
+                || path.equals("/api/captcha")
                 || path.equals("/api/session")
                 || path.equals("/api/public/users")
                 || path.startsWith("/images/")
