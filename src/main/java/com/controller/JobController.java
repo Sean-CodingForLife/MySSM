@@ -33,8 +33,9 @@ public class JobController extends BaseController {
 
 	@GetMapping("/api/admin/jobs")
 	@ResponseBody
-	public ResponseData queryJobs(@RequestParam String keyword, @RequestParam Integer startPage,
-			@RequestParam Integer offset) {
+	public ResponseData queryJobs(@RequestParam(defaultValue = "") String keyword,
+			@RequestParam(required = false) Integer startPage,
+			@RequestParam(required = false) Integer offset) {
 
 		return jobService.queryJobs(keyword, startPage, offset);
 	}

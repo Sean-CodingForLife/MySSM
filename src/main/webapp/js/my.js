@@ -1,323 +1,273 @@
-function getSelectedCheckbox(checkboxList) {
-    var selectOnes = checkboxList;
-    var datas = [];
-    for (var i = 0; i < selectOnes.length; i++) {
-        if (selectOnes[i].checked) {
-            var data = {};
-            data.no = parseInt(selectOnes[i].value);
-            datas.push(data);
+var TablePage = {
+    activeRow: null,
+    activeColumns: null
+};
+
+function buildUrl(baseUrl, params) {
+    var query = [];
+    params = params || {};
+
+    Object.keys(params).forEach(function (key) {
+        var value = params[key];
+        if (value !== undefined && value !== null) {
+            query.push(encodeURIComponent(key) + "=" + encodeURIComponent(value));
         }
-    }
-    return datas;
+    });
+
+    return query.length ? baseUrl + "?" + query.join("&") : baseUrl;
 }
 
-function GetRequestParam(interface, startPage, offset, keyword, type) {
-    this.interface = interface;
-    this.startPage = startPage;
-    this.offset = offset;
-    this.keyword = keyword;
-    this.type = type;
-
-    this.url = function () {
-        var keys = Object.keys(this);
-        var max = keys.length - 2;
-        var str = this[keys[0]] + "?";
-        for (let i = 1; i < max; i++) {
-            let value = this[keys[i]];
-            if (value == undefined) continue;
-            str += (keys[i] + "=" + value + "&");
-        }
-        if (this[keys[max]] != undefined) {
-            str += (keys[max] + "=" + this[keys[max]]);
-        } else {
-            str = str.substring(0, str.length - 1);
-        }
-        return str;
-    }
+function createListState(baseUrl, pageSize, defaults) {
+    return {
+        baseUrl: baseUrl,
+        page: 1,
+        pageSize: pageSize || 10,
+        params: defaults || {}
+    };
 }
 
-function getSelectedRadio(radioList) {
-    var radio = "";
-    for (var i = 0; i < radioList.length; i++) {
-        if (radioList[i].checked) {
-            radio = radioList[i].value;
-            break;
-        }
-    }
-    return radio;
+function tableParams(state) {
+    var params = {};
+    Object.keys(state.params || {}).forEach(function (key) {
+        params[key] = state.params[key];
+    });
+    params.startPage = state.page;
+    params.offset = state.pageSize;
+    return params;
 }
 
-function getSelectedOption(optionList) {
-    var options = optionList;
-    var selectedIndex = options.selectedIndex;
-    var selectedOption = options[selectedIndex];
-    return selectedOption.value;
+function displayValue(value) {
+    if (value === null || value === undefined || value === "null") {
+        return "";
+    }
+    return value;
+}
+
+function loadTable(state, columns, options) {
+    options = options || {};
+    var url = buildUrl(state.baseUrl, tableParams(state));
+
+    getJson(url, function (data) {
+        var successful = data && data.head && data.head.successful;
+        var rows = successful ? (data.body || []) : [];
+        var count = successful ? (data.head.count || 0) : 0;
+
+        renderTable(rows, columns, options);
+        drawPageBar(count, state, columns, options);
+        setEmptyState(rows.length === 0, options.emptyText);
+        resetEditState();
+
+        if (typeof options.afterLoad === "function") {
+            options.afterLoad(rows, data);
+        }
+    });
+}
+
+function renderTable(rows, columns, options) {
+    options = options || {};
+    var tbody = document.querySelector("#table tbody");
+    tbody.innerHTML = "";
+
+    rows.forEach(function (row) {
+        var tr = document.createElement("tr");
+        $(tr).data("row", row);
+
+        if (options.selectable !== false) {
+            var selectCell = document.createElement("td");
+            var checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            checkbox.name = "selectOne";
+            checkbox.value = row.no;
+            selectCell.appendChild(checkbox);
+            tr.appendChild(selectCell);
+        }
+
+        columns.forEach(function (column) {
+            var td = document.createElement("td");
+            td.setAttribute("data-key", column.key);
+            td.textContent = displayValue(row[column.key]);
+            tr.appendChild(td);
+        });
+
+        tbody.appendChild(tr);
+    });
+}
+
+function setEmptyState(isEmpty, text) {
+    var empty = document.getElementById("emptyState");
+    if (!empty) {
+        return;
+    }
+    empty.textContent = text || "No records found.";
+    empty.style.display = isEmpty ? "block" : "none";
+}
+
+function drawPageBar(count, state, columns, options) {
+    var pageBar = document.querySelector(".pageBar");
+    if (!pageBar) {
+        return;
+    }
+
+    var maxPage = Math.max(1, Math.ceil((count || 0) / state.pageSize));
+    pageBar.innerHTML = "";
+
+    function appendButton(label, page, disabled, active) {
+        var li = document.createElement("li");
+        li.className = active ? "page-item-active" : "page-item";
+        if (disabled) {
+            li.className += " disabled";
+        }
+        li.setAttribute("data-page", page);
+        li.textContent = label;
+        pageBar.appendChild(li);
+    }
+
+    appendButton("Previous", Math.max(1, state.page - 1), state.page <= 1, false);
+    for (var i = 1; i <= maxPage; i++) {
+        appendButton(i, i, false, i === Number(state.page));
+    }
+    appendButton("Next", Math.min(maxPage, state.page + 1), state.page >= maxPage, false);
+
+    $(pageBar).off("click").on("click", "li", function () {
+        if ($(this).hasClass("disabled") || $(this).hasClass("page-item-active")) {
+            return;
+        }
+        state.page = Number($(this).attr("data-page"));
+        loadTable(state, columns, options);
+    });
+}
+
+function bindTableEditing(columns) {
+    $("#table tbody").off("dblclick").on("dblclick", "tr", function () {
+        beginRowEdit(this, columns);
+    });
+}
+
+function beginRowEdit(row, columns) {
+    if (TablePage.activeRow && TablePage.activeRow !== row) {
+        cancelUpdate();
+    }
+
+    TablePage.activeRow = row;
+    TablePage.activeColumns = columns;
+    row.classList.add("editing");
+
+    columns.forEach(function (column) {
+        if (!column.editable) {
+            return;
+        }
+
+        var cell = row.querySelector("td[data-key='" + column.key + "']");
+        if (!cell || cell.querySelector("input")) {
+            return;
+        }
+
+        var input = document.createElement("input");
+        input.type = column.inputType || "text";
+        input.value = cell.textContent;
+        input.setAttribute("data-edit-key", column.key);
+        cell.textContent = "";
+        cell.appendChild(input);
+    });
+
+    $(".save, .cancel").prop("disabled", false).show();
+}
+
+function getEditedRowData() {
+    if (!TablePage.activeRow) {
+        return null;
+    }
+
+    var original = $.extend({}, $(TablePage.activeRow).data("row"));
+    $(TablePage.activeRow).find("[data-edit-key]").each(function () {
+        original[$(this).attr("data-edit-key")] = $(this).val();
+    });
+    return original;
+}
+
+function resetEditState() {
+    TablePage.activeRow = null;
+    TablePage.activeColumns = null;
+    $(".save, .cancel").prop("disabled", true).hide();
 }
 
 function cancelUpdate() {
-    var activeRow = document.getElementById("activeRow");
-
-    var save = document.getElementsByClassName("save")[0];
-    var cancel = document.getElementsByClassName("cancel")[0];
-
-    save.style.display = "none";
-    cancel.style.display = "none";
-
-    var tds = activeRow.cells;
-
-    for (var i = 2; i < tds.length; i++) {
-        var input = tds[i].getElementsByTagName("input")[0];
-        removeElement(input);
-        var p = tds[i].getElementsByTagName("p")[0];
-        p.style.display = "inline";
+    if (!TablePage.activeRow) {
+        resetEditState();
+        return;
     }
-    activeRow.removeAttribute("id");
+
+    var rowData = $(TablePage.activeRow).data("row");
+    (TablePage.activeColumns || []).forEach(function (column) {
+        if (!column.editable) {
+            return;
+        }
+        var cell = TablePage.activeRow.querySelector("td[data-key='" + column.key + "']");
+        if (cell) {
+            cell.textContent = displayValue(rowData[column.key]);
+        }
+    });
+
+    TablePage.activeRow.classList.remove("editing");
+    resetEditState();
 }
 
-function preUpdate() {
-
-    var targetName = event.target.nodeName;
-
-    var activeRow = document.getElementById("activeRow");
-
-    if (activeRow == null) {
-
-        var td;
-
-        if (targetName == "P") {
-            td = event.target.parentNode;
-        } else if (targetName == "TD") {
-            td = event.target;
-        }
-
-        var tr = td.parentNode;
-
-        var save = document.getElementsByClassName("save")[0];
-        var cancel = document.getElementsByClassName("cancel")[0];
-
-        save.style.display = "inline";
-        cancel.style.display = "inline";
-
-        tr.setAttribute("id", "activeRow");
-
-        var tds = tr.cells;
-
-        for (var i = 2; i < tds.length; i++) {
-            var cell = tds[i];
-
-            var input = document.createElement("input");
-
-            input.setAttribute("value", cell.textContent);
-            input.setAttribute("type", "text");
-            input.style.border = "none";
-            input.style.color = "blue";
-
-            var p = cell.getElementsByTagName("p")[0];
-
-            p.style.display = "none";
-
-            cell.appendChild(input);
-
+function getSelectedCheckbox(checkboxList) {
+    var rows = [];
+    for (var i = 0; i < checkboxList.length; i++) {
+        if (checkboxList[i].checked) {
+            rows.push({ no: parseInt(checkboxList[i].value, 10) });
         }
     }
+    return rows;
 }
 
-function removeElement(_element) {
-
-    var _parentElement = _element.parentNode;
-
-    if (_parentElement) {
-        _parentElement.removeChild(_element);
+function getSelectedRadio(radioList) {
+    for (var i = 0; i < radioList.length; i++) {
+        if (radioList[i].checked) {
+            return radioList[i].value;
+        }
     }
+    return "";
 }
 
+function getSelectedOption(optionList) {
+    return optionList.options[optionList.selectedIndex].value;
+}
 
 function selectAll() {
-
-    var selectAll = document.getElementById("selectAll");
-    var selectOne = document.getElementsByName("selectOne");
-
-    for (var i = 0; i < selectOne.length; i++) {
-
-        selectOne[i].checked = selectAll.checked;
-
+    var selectAllBox = document.getElementById("selectAll");
+    var checkboxes = document.getElementsByName("selectOne");
+    for (var i = 0; i < checkboxes.length; i++) {
+        checkboxes[i].checked = selectAllBox.checked;
     }
-
-}
-
-function closePopBox() {
-
-    //SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
-
-    var light = document.getElementsByClassName("light")[0];
-    var fade = document.getElementsByClassName("fade")[0];
-    light.style.display = "none";
-    fade.style.display = "none";
 }
 
 function openPopBox() {
-
-    //SSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS
-
-    var light = document.getElementsByClassName("light")[0];
-    var fade = document.getElementsByClassName("fade")[0];
-    light.style.display = "block";
-    fade.style.display = "block";
+    $(".light, .fade").show();
 }
 
-function drawPageBar(count, startPage, offset) {
-
-    var pageBar = document.getElementsByClassName("pageBar")[0];
-
-    var lis = pageBar.children;
-
-    var prePage = lis[0];
-
-    var nextPage = lis[lis.length - 1];
-
-    var maxPage = 1;
-
-    for (let i = 1, max = lis.length - 1; i < max; i++) {
-        removeElement(lis[1]);
-    }
-
-    if (count > offset) {
-        var tmp = count % offset;
-        if (tmp != 0) {
-            maxPage = ((count - tmp) / offset) + 1;
-        } else {
-            maxPage = (count / offset);
-        }
-    }
-
-    if (startPage == 1) {
-        prePage.style.display = "none";
-        if (maxPage == 1) {
-            nextPage.style.display = "none";
-        } else {
-            nextPage.style.display = "";
-        }
-    } else if (startPage == maxPage) {
-        prePage.style.display = "";
-        nextPage.style.display = "none";
-    } else {
-        prePage.style.display = "";
-        nextPage.style.display = "";
-    }
-
-    for (var i = 0; i < maxPage; i++) {
-        var a = document.createElement("a");
-        var li = document.createElement("li");
-        if ((i + 1) == startPage) {
-            li.setAttribute("class", "page-item-active");
-        } else {
-            li.setAttribute("class", "page-item");
-        }
-
-        a.textContent = i + 1;
-        li.appendChild(a);
-        pageBar.insertBefore(li, nextPage);
-    }
+function closePopBox() {
+    $(".light, .fade").hide();
 }
 
-function drawTable(list) {
-
-    var table = document.getElementById("table");
-    var tableRowsLength = table.rows.length - 1;
-
-    for (var i = 0; i < tableRowsLength; i++) {
-        table.deleteRow(1);
-    }
-
-    for (var i = 1; i <= list.length; i++) {
-        var row = table.insertRow();
-        var cell = row.insertCell();
-        var data = list[i - 1];
-
-        var input = document.createElement("input");
-        input.setAttribute("name", "selectOne");
-        input.setAttribute("type", "checkbox");
-        input.setAttribute("value", data.no)
-
-        cell.appendChild(input);
-
-        for (var x in data) {
-            var cell = row.insertCell();
-
-            var p = document.createElement("p");
-
-            var text = document.createTextNode(data[x]);
-
-            p.appendChild(text);
-
-            cell.appendChild(p);
-        }
-    }
-    if (list.length != 0) {
-        table.style.display = "";
-    } else {
-        table.style.display = "none";
-    }
+function clearForm(selector) {
+    $(selector).find("input, textarea").val("");
+    $(selector).find("select").prop("selectedIndex", 0);
 }
 
-function bindPageBarEventListener(getRequestParam) {
-
-    var pageBar = document.getElementsByClassName("pageBar")[0];
-
-    pageBar.addEventListener("click", function (event) {
-        var target = event.target;
-        var type = target.nodeName;
-
-        switch (type) {
-            case "LI":
-                var className = target.className;
-                var text = target.children[0].textContent;
-                break;
-            case "A":
-                var className = target.parentNode.className;
-                var text = target.textContent;
-                break;
-        }
-        switch (className) {
-            default:
-                getRequestParam.startPage = text;
-                break;
-            case "prevPage":
-                getRequestParam.startPage -= 1;
-                break;
-            case "nextPage":
-                getRequestParam.startPage += 1;
-                break;
-        }
-        getRequest(getRequestParam);
-
+function formData(selector) {
+    var data = {};
+    $(selector).find("[data-field]").each(function () {
+        data[$(this).attr("data-field")] = $(this).val();
     });
+    return data;
+}
 
-    pageBar.addEventListener("mouseover", function (event) {
-        var target = event.target;
-
-        var type = target.nodeName;
-
-        switch (type) {
-            case "LI":
-                target.style.borderColor = "rgb(70, 144, 255)";
-                break;
-            case "A":
-                var parent = target.parentNode;
-                parent.style.borderColor = "rgb(70, 144, 255)";
-                break;
-        }
-
-    });
-    pageBar.addEventListener("mouseout", function (event) {
-        var target = event.target;
-
-        var type = target.nodeName;
-
-        switch (type) {
-            case "LI":
-                target.style.borderColor = "gray";
-                break;
-        }
-    });
+function requireSelection(rows, label) {
+    if (!rows.length) {
+        alert("Please select at least one " + label + ".");
+        return false;
+    }
+    return true;
 }

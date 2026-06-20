@@ -3,6 +3,7 @@
 <html>
 <head>
     <title>Admin Console</title>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/my.css" />
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/requests.js"></script>
     <script type="text/javascript">
@@ -12,29 +13,25 @@
             });
         }
     </script>
-    <style>
-        #list li {
-            list-style-type: none;
-            margin: 8px 0;
-        }
-    </style>
 </head>
 <body>
-    <div>
-        <span>Admin Console</span>
-    </div>
-    <div>
-        <ul id="list">
-            <li><a href="${pageContext.request.contextPath}/admin/users">Users</a></li>
-            <li><a href="${pageContext.request.contextPath}/admin/departments">Departments</a></li>
-            <li><a href="${pageContext.request.contextPath}/admin/jobs">Jobs</a></li>
-            <li><a href="${pageContext.request.contextPath}/admin/documents">Documents</a></li>
-            <li><a href="${pageContext.request.contextPath}/admin/employees">Employees</a></li>
-            <li><a href="${pageContext.request.contextPath}/admin/notices">Notices</a></li>
-        </ul>
-    </div>
-    <div>
-        <a href="javascript:void(0)" onclick="logout()">Logout</a>
-    </div>
+<main class="app-shell">
+    <header class="page-header">
+        <div>
+            <h1 class="page-title">Admin Console</h1>
+            <p class="breadcrumb">Personnel operations and account management</p>
+        </div>
+        <button type="button" onclick="logout()">Logout</button>
+    </header>
+
+    <section class="dashboard-grid">
+        <a href="${pageContext.request.contextPath}/admin/users">Users</a>
+        <a href="${pageContext.request.contextPath}/admin/departments">Departments</a>
+        <a href="${pageContext.request.contextPath}/admin/jobs">Jobs</a>
+        <a href="${pageContext.request.contextPath}/admin/documents">Documents</a>
+        <a href="${pageContext.request.contextPath}/admin/employees">Employees</a>
+        <a href="${pageContext.request.contextPath}/admin/notices">Notices</a>
+    </section>
+</main>
 </body>
 </html>

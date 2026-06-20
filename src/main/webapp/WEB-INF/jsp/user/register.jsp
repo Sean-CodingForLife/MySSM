@@ -9,16 +9,20 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/requests.js"></script>
     <script type="text/javascript">
         function register() {
-            var account = document.getElementById("account").value;
-            var name = document.getElementById("name").value;
-            var password = document.getElementById("password").value;
-            var rePassword = document.getElementById("repassword").value;
+            var account = $("#account").val();
+            var name = $("#name").val();
+            var password = $("#password").val();
+            var repeatedPassword = $("#repassword").val();
 
+            if (!account || !name || !password) {
+                alert("Account, name and password are required.");
+                return;
+            }
             if (password.length < 8) {
                 alert("Password must be at least 8 characters.");
                 return;
             }
-            if (password !== rePassword) {
+            if (password !== repeatedPassword) {
                 alert("Passwords do not match.");
                 return;
             }
@@ -34,18 +38,28 @@
     </script>
 </head>
 <body>
+<main class="auth-panel">
+    <h1>User Register</h1>
     <form action="">
-        <ul class="form-input-list">
-            <li>Account</li>
-            <li><input type="text" id="account" /></li>
-            <li>Name</li>
-            <li><input type="text" id="name" /></li>
-            <li>Password</li>
-            <li><input type="password" id="password" /></li>
-            <li>Repeat Password</li>
-            <li><input type="password" id="repassword" /></li>
-        </ul>
-        <input type="button" onclick="register()" value="Register" />
+        <div class="field">
+            <label for="account">Account</label>
+            <input type="text" id="account" autocomplete="username" />
+        </div>
+        <div class="field">
+            <label for="name">Name</label>
+            <input type="text" id="name" />
+        </div>
+        <div class="field">
+            <label for="password">Password</label>
+            <input type="password" id="password" autocomplete="new-password" />
+        </div>
+        <div class="field">
+            <label for="repassword">Repeat Password</label>
+            <input type="password" id="repassword" autocomplete="new-password" />
+        </div>
+        <button class="primary" type="button" onclick="register()">Register</button>
     </form>
+    <p><a href="${pageContext.request.contextPath}/user/login">Back to login</a></p>
+</main>
 </body>
 </html>

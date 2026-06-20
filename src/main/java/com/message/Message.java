@@ -6,59 +6,52 @@ import com.myTool.Jsonable;
 @JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Message implements Jsonable {
 
-	loginSuccess("登录成功", true),
-	loginFail_Password("登录失败，密码错误", false),
-	loginFail_Account("登录失败，账号错误", false),
-	registerSuccess("注册成功", true),
-	registerFail("注册失败", false),
-	fail("失败", false),
-	success("成功", true);
-	
-		
-	private String  message;
-	private boolean flag;
+    loginSuccess("Login succeeded.", true),
+    loginFail_Password("Login failed: incorrect password.", false),
+    loginFail_Account("Login failed: account not found.", false),
+    registerSuccess("Registration succeeded.", true),
+    registerFail("Registration failed.", false),
+    fail("Operation failed.", false),
+    success("Operation succeeded.", true);
 
-	private Message(String message, boolean flag) {
-		 this.setMessage(message);
-		 this.setFlag(flag);
-	}
+    private String message;
+    private boolean flag;
 
-	public String getMessage() {
-		return message;
-	}
+    Message(String message, boolean flag) {
+        this.message = message;
+        this.flag = flag;
+    }
 
-	public void setMessage(String message) {
-		this.message = message;
-	}
-	
-	public boolean getFlag() {
-		return flag;
-	}
+    public String getMessage() {
+        return message;
+    }
 
-	public void setFlag(boolean flag) {
-		this.flag = flag;
-	}
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
-	@Override
-	public String toJson() {
-		return "{\"message\" : " + "\"" + this.message + "\", " +
-				"\"flag\"   : " + Boolean.toString(this.flag) + "}";
-		
-	}
+    public boolean getFlag() {
+        return flag;
+    }
 
-	@Override
-	public String toJson(String key, Boolean flag) {
-		if (flag) {
-			if (key == null || key.equals("")) {
-				return "{\"message\" : " + "\"" + this.message + "\", " + "\"flag\"   : " 
-				+ Boolean.toString(this.flag) + "}";
-			} else {
-				return key + " : {\"message\" : " + "\"" + this.message + "\", " + "\"flag\"   : " 
-				+ Boolean.toString(this.flag) + "}";
-			}
-		} else {
-			return String.format("{%s}", (key + " : {\"message\" : " + "\"" + this.message + "\", " + "\"flag\"   : "
-					+ Boolean.toString(this.flag) + "}"));
-		}
-	}
+    public void setFlag(boolean flag) {
+        this.flag = flag;
+    }
+
+    @Override
+    public String toJson() {
+        return "{\"message\" : " + "\"" + this.message + "\", "
+                + "\"flag\"   : " + Boolean.toString(this.flag) + "}";
+    }
+
+    @Override
+    public String toJson(String key, Boolean flag) {
+        if (flag) {
+            if (key == null || key.equals("")) {
+                return toJson();
+            }
+            return key + " : " + toJson();
+        }
+        return String.format("{%s}", key + " : " + toJson());
+    }
 }

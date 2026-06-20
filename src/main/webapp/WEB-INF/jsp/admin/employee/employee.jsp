@@ -1,324 +1,263 @@
-<%@ page language = "java" import = "java.util.*" pageEncoding = "UTF-8"%>
+<%@ page language="java" pageEncoding="UTF-8"%>
 
 <html>
-
 <head>
-    <title>
-        员工管理
-    </title>
+    <title>Employee Management</title>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/my.css" />
-
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/my.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/requests.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/my.js"></script>
     <script type="text/javascript">
+        var state = createListState("${pageContext.request.contextPath}/api/admin/employees", 10, {
+            keyword: "",
+            type: ""
+        });
 
-        var getRequestParam = new GetRequestParam("${pageContext.request.contextPath}/api/admin/employees", 1, 10, "", "");
+        var columns = [
+            { key: "no", label: "No." },
+            { key: "name", label: "Name", editable: true },
+            { key: "id", label: "ID Number", editable: true },
+            { key: "phone", label: "Phone", editable: true },
+            { key: "email", label: "Email", editable: true },
+            { key: "sex", label: "Sex", editable: true },
+            { key: "department", label: "Department" },
+            { key: "job", label: "Job" },
+            { key: "created_date", label: "Created At" }
+        ];
 
-        window.onload = function () {
-            getRequest(getRequestParam);
-            bindPageBarEventListener(getRequestParam);
+        var detailFields = [
+            "name", "id", "address", "mail", "phone", "qq", "email", "sex",
+            "political_status", "birthday", "nation", "education", "major",
+            "hobby", "description", "department_no", "job_no"
+        ];
+
+        function refreshEmployees() {
+            loadTable(state, columns, { emptyText: "No employees found." });
         }
 
-        function query() {
-
-            var keyword = document.getElementById("keyword").value;
-            var type = getSelectedOption(document.getElementById("selector"));
-            if (keyword == "") {
-                alert("Get out here Mother Sucker!");
-                return;
-            }
-            getRequestParam.keyword = keyword;
-            getRequestParam.type = type;
-            getRequest(getRequestParam);
-            window.href += "#wizard";
+        function searchEmployees() {
+            state.page = 1;
+            state.params.keyword = $("#keyword").val();
+            state.params.type = $("#type").val();
+            refreshEmployees();
         }
 
-        function deleteEmployee() {
-            if (confirm("确定?")) {
-                 var employees = getSelectedCheckbox(document.getElementsByName("selectOne"));
-                if (employees.length != 0) {
-                    deleteRequest("${pageContext.request.contextPath}/api/admin/employees", employees, function () { alert("删除成功，来刷新一下吧"); });
-                } else {
-                    alert("哈都没有选你就删？");
-                }
-            
+        function employeePayload(source) {
+            var data = {};
+            detailFields.forEach(function (field) {
+                data[field] = source[field] || "";
+            });
+            if (source.no !== undefined) {
+                data.no = String(source.no);
             }
-        }
-
-        function requestBody(no, name, id, address, mail, phone, QQ, email, sex, political_status,
-                             birthday, nation, education, major, hobby, description, job_no, department_no) {
-            {
-                this.no = no;
-                this.name = name;
-                this.id = id; 
-                this.address = address;
-                this.mail = mail;
-                this.phone = phone; 
-                this.QQ = QQ; 
-                this.email = email; 
-                this.sex = sex; 
-                this.political_status = political_status; 
-                this.birthday = birthday; 
-                this.nation = nation; 
-                this.education = education; 
-                this.major = major; 
-                this.hobby = hobby; 
-                this.description = description; 
-                this.job_no = job_no;
-                this.department_no = department_no; 
-            }
+            return data;
         }
 
         function addEmployee() {
+            var data = employeePayload(formData("#employeeForm"));
+            if (!data.name || !data.department_no || !data.job_no) {
+                alert("Name, department and job are required.");
+                return;
+            }
 
-            var data = new requestBody(
-            null,
-            document.getElementById("name").value,
-            document.getElementById("id").value,
-            document.getElementById("address").value,
-            document.getElementById("mail").value,
-            document.getElementById("phone").value,
-            document.getElementById("QQ").value,
-            document.getElementById("email").value,
-            document.getElementById("sex").value,
-            document.getElementById("political_status").value,
-            document.getElementById("birthday").value,
-            document.getElementById("nation").value,
-            document.getElementById("education").value,
-            document.getElementById("major").value,
-            document.getElementById("hobby").value,
-            document.getElementById("description").value,
-            getSelectedOption(document.getElementById("jobSelector")),
-            getSelectedOption(document.getElementById("departmentSelector")));
-            
-            postRequest("${pageContext.request.contextPath}/api/admin/employees", data, function () { alert("添加成功，刷新一下吧"); });
-
+            postRequest("${pageContext.request.contextPath}/api/admin/employees", data, function () {
+                closePopBox();
+                clearForm("#employeeForm");
+                refreshEmployees();
+            });
         }
 
         function updateEmployee() {
+            var row = getEditedRowData();
+            if (!row) {
+                return;
+            }
 
-            var activeRow = document.getElementById("activeRow");
-
-            var data = new requestBody(
-                activeRow.cells[1].textContent,
-                activeRow.cells[2].getElementsByTagName("input")[0].value,
-                activeRow.cells[3].getElementsByTagName("input")[0].value,
-                activeRow.cells[4].getElementsByTagName("input")[0].value,
-                activeRow.cells[5].getElementsByTagName("input")[0].value,
-                activeRow.cells[6].getElementsByTagName("input")[0].value,
-                activeRow.cells[7].getElementsByTagName("input")[0].value,
-                activeRow.cells[8].getElementsByTagName("input")[0].value,
-                activeRow.cells[9].getElementsByTagName("input")[0].value,
-                activeRow.cells[10].getElementsByTagName("input")[0].value,
-                activeRow.cells[11].getElementsByTagName("input")[0].value,
-                activeRow.cells[12].getElementsByTagName("input")[0].value,
-                activeRow.cells[13].getElementsByTagName("input")[0].value,
-                activeRow.cells[14].getElementsByTagName("input")[0].value,
-                activeRow.cells[15].getElementsByTagName("input")[0].value,
-                activeRow.cells[16].getElementsByTagName("input")[0].value,
-                activeRow.cells[17].getElementsByTagName("input")[0].value,
-                activeRow.cells[18].getElementsByTagName("input")[0].value);
-                putRequest("${pageContext.request.contextPath}/api/admin/employees", data, function () { alert("更新成功，刷新一下吧"); });
-
+            var data = employeePayload(row);
+            putRequest("${pageContext.request.contextPath}/api/admin/employees", data, function () {
+                refreshEmployees();
+            });
         }
 
+        function deleteEmployee() {
+            var employees = getSelectedCheckbox(document.getElementsByName("selectOne"));
+            if (!requireSelection(employees, "employee")) {
+                return;
+            }
+
+            if (confirm("Delete selected employees?")) {
+                deleteRequest("${pageContext.request.contextPath}/api/admin/employees", employees, function () {
+                    refreshEmployees();
+                });
+            }
+        }
+
+        function loadOptions() {
+            getJson("${pageContext.request.contextPath}/api/admin/departments?keyword=", function (data) {
+                fillOptions("#department_no", data.body || [], "Select department");
+            });
+            getJson("${pageContext.request.contextPath}/api/admin/jobs?keyword=", function (data) {
+                fillOptions("#job_no", data.body || [], "Select job");
+            });
+        }
+
+        function fillOptions(selector, rows, placeholder) {
+            var select = $(selector);
+            select.empty();
+            select.append($("<option>").val("").text(placeholder));
+            rows.forEach(function (row) {
+                select.append($("<option>").val(row.no).text(row.name));
+            });
+        }
+
+        $(function () {
+            bindTableEditing(columns);
+            loadOptions();
+            refreshEmployees();
+        });
     </script>
-
 </head>
-
 <body>
-    <div>
-        <span>
-            当前路径:主页>员工管理
-        </span>
-    </div>
-    <div>
-        <form>
-            <div>
-                <input type="text" id="keyword" />
-                <input type="text" class="hiddenText" />
-                <select id="selector">
-                    <option value="name">姓名</option>
-                    <option value="id">身份证号</option>
-                    <option value="phone">手机号</option>
-                    <option value="sex">性别</option>
-                    <option value="job">职位</option>
-                    <option value="department">部门</option>
-                </select>
-                <input type="button" onclick="query()" value="搜索" />
-            </div>
-        </form>
-    </div>
-    <div>
-        <table id="table" border="1" ondblclick="preUpdate()">
-            <tr class = "headRow">
-                <td>
-                    <input id="selectAll" type="checkbox" onclick="selectAll()" />
-                </td>
-                <td>编    号</td>
-                <td>姓    名</td>
-                <td>身份证号</td>
-                <td>住    址</td>
-                <td>邮箱编号</td>
-                <td>电话号码</td>
-                <td>Q  Q 号</td>
-                <td>电子邮箱</td>
-                <td>性    别</td>
-                <td>政治面貌</td>
-                <td>生    日</td>
-                <td>民    族</td>
-                <td>学    历</td>
-                <td>专    业</td>
-                <td>爱    好</td>
-                <td>描    述</td>
-                <td>建档日期</td>
-                <td>所属部门</td>
-                <td>职    位</td>
+<main class="app-shell">
+    <header class="page-header">
+        <div>
+            <h1 class="page-title">Employee Management</h1>
+            <p class="breadcrumb">Admin Console / Employees</p>
+        </div>
+        <a class="button-link" href="${pageContext.request.contextPath}/admin/dashboard">Back</a>
+    </header>
+
+    <section class="toolbar">
+        <div class="field grow">
+            <label for="keyword">Keyword</label>
+            <input type="text" id="keyword" placeholder="Search employees" />
+        </div>
+        <div class="field">
+            <label for="type">Search By</label>
+            <select id="type">
+                <option value="">All</option>
+                <option value="name">Name</option>
+                <option value="id">ID Number</option>
+                <option value="phone">Phone</option>
+                <option value="sex">Sex</option>
+                <option value="department">Department</option>
+                <option value="job">Job</option>
+            </select>
+        </div>
+        <button type="button" onclick="searchEmployees()">Search</button>
+        <button type="button" onclick="state.params.keyword=''; state.params.type=''; $('#keyword').val(''); $('#type').val(''); searchEmployees()">Reset</button>
+    </section>
+
+    <section class="table-panel">
+        <table id="table" class="data-table">
+            <thead>
+            <tr>
+                <th><input id="selectAll" type="checkbox" onclick="selectAll()" /></th>
+                <th>No.</th>
+                <th>Name</th>
+                <th>ID Number</th>
+                <th>Phone</th>
+                <th>Email</th>
+                <th>Sex</th>
+                <th>Department</th>
+                <th>Job</th>
+                <th>Created At</th>
             </tr>
+            </thead>
+            <tbody></tbody>
         </table>
-    </div>
+        <div id="emptyState" class="empty-state"></div>
+    </section>
 
-    <div class="light">
-        <div>
-            <form action="">
-                <ul>
-                    <li class="popBoxContent-left">
-                        <ul class="popBoxContent">
-                            <li>姓名</li>
-                            <li>身份证号</li>
-                            <li>住址</li>
-                            <li>邮箱编号</li>
-                            <li>电话号码</li>
-                            <li>QQ号</li>
-                            <li>电子邮箱</li>
-                            <li>性别</li>
-                        </ul>
-                        <ul class="popBoxContent">
-                            <li><input id="name" type="text" /></li>
-                            <li><input id="id" type="text" /></li>
-                            <li><input id="address" type="text" /></li>
-                            <li><input id="mail" type="text" /></li>
-                            <li><input id="phone" type="text" /></li>
-                            <li><input id="QQ" type="text" /></li>
-                            <li><input id="email" type="text" /></li>
-                            <li><input id="sex" type="text" /></li>
-                        </ul>
-                    </li>
-                    <li class="popBoxContent-right">
-                        <ul class="popBoxContent">
-                            <li>政治面貌</li>
-                            <li>生日</li>
-                            <li>民族</li>
-                            <li>学历</li>
-                            <li>专业</li>
-                            <li>爱好</li>
-                            <li>描述</li>
-                            <li>所属部门</li>
-                            <li>职位</li>
-                        </ul>
-                        <ul class="popBoxContent">
-                            <li><input id="political_status" type="text" /></li>
-                            <li><input id="birthday" type="text" /></li>
-                            <li><input id="nation" type="text" /></li>
-                            <li><input id="education" type="text" /></li>
-                            <li><input id="major" type="text" /></li>
-                            <li><input id="hobby" type="text" /></li>
-                            <li><input id="description" type="text" /></li>
-                            <li>
-                                <select id="departmentSelector">
-                                    <option value = "default" checked>选择部门</option>
-                                </select>
-                            </li>
-                            <li>
-                                <select id="jobSelector">
-                                    <option  value = "default">选择职位</option>
-                                </select>
-                            </li>
-                        </ul>
-                    </li>
-                </ul>
-            </form>
-        </div>
-        <div class="popBoxOperationBar">
-            <a href="javascript:void(0)" onclick="addEmployee()">提交</a>
-            <a href="javascript:void(0)" onclick="closePopBox()">取消</a>
-        </div>
-    </div>
-    <div class="fade"></div>
+    <section class="operationBar">
+        <button class="save primary" type="button" onclick="updateEmployee()">Save</button>
+        <button class="cancel" type="button" onclick="cancelUpdate()">Cancel</button>
+        <button class="danger" type="button" onclick="deleteEmployee()">Delete</button>
+        <button class="primary" type="button" onclick="openPopBox()">Add Employee</button>
+    </section>
 
-    <div" class="operationBar">
-        <a class="save" href="javascript:void(0)" onclick="updateEmployee()">保存</a>
-        <a class="cancel" href="javascript:void(0)" onclick="cancelUpdate()">取消</a>
-        <a id = "deleteJob"class="show" href="javascript:void(0)" onclick="deleteEmployee()">删除员工</a>
-        <a id = "addJob"   class="show" href="javascript:void(0)" onclick="openPopBox()">添加员工</a>
-        <a class="show" href="${pageContext.request.contextPath}/admin/dashboard">返回</a>
+    <ul class="pageBar"></ul>
+</main>
+
+<div class="light">
+    <h2 class="modal-header">Add Employee</h2>
+    <form id="employeeForm" action="">
+        <div class="form-grid">
+            <div class="field">
+                <label for="name">Name</label>
+                <input type="text" id="name" data-field="name" />
+            </div>
+            <div class="field">
+                <label for="id">ID Number</label>
+                <input type="text" id="id" data-field="id" />
+            </div>
+            <div class="field">
+                <label for="address">Address</label>
+                <input type="text" id="address" data-field="address" />
+            </div>
+            <div class="field">
+                <label for="mail">Postal Code</label>
+                <input type="text" id="mail" data-field="mail" />
+            </div>
+            <div class="field">
+                <label for="phone">Phone</label>
+                <input type="text" id="phone" data-field="phone" />
+            </div>
+            <div class="field">
+                <label for="qq">QQ</label>
+                <input type="text" id="qq" data-field="qq" />
+            </div>
+            <div class="field">
+                <label for="email">Email</label>
+                <input type="text" id="email" data-field="email" />
+            </div>
+            <div class="field">
+                <label for="sex">Sex</label>
+                <input type="text" id="sex" data-field="sex" />
+            </div>
+            <div class="field">
+                <label for="political_status">Political Status</label>
+                <input type="text" id="political_status" data-field="political_status" />
+            </div>
+            <div class="field">
+                <label for="birthday">Birthday</label>
+                <input type="text" id="birthday" data-field="birthday" />
+            </div>
+            <div class="field">
+                <label for="nation">Nation</label>
+                <input type="text" id="nation" data-field="nation" />
+            </div>
+            <div class="field">
+                <label for="education">Education</label>
+                <input type="text" id="education" data-field="education" />
+            </div>
+            <div class="field">
+                <label for="major">Major</label>
+                <input type="text" id="major" data-field="major" />
+            </div>
+            <div class="field">
+                <label for="hobby">Hobby</label>
+                <input type="text" id="hobby" data-field="hobby" />
+            </div>
+            <div class="field">
+                <label for="department_no">Department</label>
+                <select id="department_no" data-field="department_no"></select>
+            </div>
+            <div class="field">
+                <label for="job_no">Job</label>
+                <select id="job_no" data-field="job_no"></select>
+            </div>
+            <div class="field full">
+                <label for="description">Description</label>
+                <textarea id="description" data-field="description"></textarea>
+            </div>
         </div>
-        <div>
-            <ul class="pageBar">
-                <li class="prevPage">
-                    <a>
-                        上一页
-                    </a>
-                </li>
-                <li class="nextPage">
-                    <a>
-                        下一页
-                    </a>
-                </li>
-            </ul>
-        </div>
-        <script type = "text/javascript">
-            (function(){
-                var departmentSelector = document.getElementById("departmentSelector");
-                var jobSelector        = document.getElementById("jobSelector");
-                var addJob             = document.getElementById("addJob");
-                addJob.addEventListener("click", function () {
-                    $.ajax({
-                        url: "${pageContext.request.contextPath}/api/admin/jobs?keyword=&startPage=&offset=",
-                        type: "get",
-                        contentType: "application/json;charset=utf-8",
-                        dataType: "json",
-                        cache: false,
-                        success: function (data) {
-                            if (data.head.successful == false) {
-                            } else {
-                                for (let i = 0, max = data.head.count;i < max;i++) {
-                                    let option = document.createElement("option");
-                                    option.setAttribute("value", data.body[i].no);
-                                    option.textContent = data.body[i].name;
-                                    jobSelector.appendChild(option);
-                                }
-                            }
-                        },
-                        error: function () {
-                            alert("傻逼");
-                        }
-                    });
-                    $.ajax({
-                        url: "${pageContext.request.contextPath}/api/admin/departments?keyword=&startPage=&offset=",
-                        type: "get",
-                        contentType: "application/json;charset=utf-8",
-                        dataType: "json",
-                        cache: false,
-                        success: function (data) {
-                            if (data.head.successful == false) {
-                            } else {
-                                for (let i = 0, max = data.head.count; i < max; i++) {
-                                    let option = document.createElement("option");
-                                    option.setAttribute("value", data.body[i].no);
-                                    option.textContent = data.body[i].name;
-                                    departmentSelector.appendChild(option);
-                                }
-                            }
-                        },
-                        error: function () {
-                            alert("傻逼");
-                        }
-                    });
-                 });
-            })();
-        </script>
+    </form>
+    <div class="modal-actions">
+        <button type="button" onclick="closePopBox()">Cancel</button>
+        <button class="primary" type="button" onclick="addEmployee()">Submit</button>
+    </div>
+</div>
+<div class="fade"></div>
 </body>
-
 </html>

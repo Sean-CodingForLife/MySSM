@@ -1,166 +1,158 @@
-<%@ page language = "java" import = "java.util.*" pageEncoding = "UTF-8"%>
+<%@ page language="java" pageEncoding="UTF-8"%>
 
 <html>
-
 <head>
-    <title>
-        通知管理
-    </title>
+    <title>Notice Management</title>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/my.css" />
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/my.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/requests.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/my.js"></script>
     <script type="text/javascript">
+        var state = createListState("${pageContext.request.contextPath}/api/admin/notices", 10, {
+            keyword: "",
+            type: ""
+        });
 
-        var getRequestParam = new GetRequestParam("${pageContext.request.contextPath}/api/admin/notices", 1, 2, "", "");
+        var columns = [
+            { key: "no", label: "No." },
+            { key: "title", label: "Title", editable: true },
+            { key: "content", label: "Content", editable: true },
+            { key: "created_date", label: "Created At" },
+            { key: "name", label: "Publisher" }
+        ];
 
-        window.onload = function () {
-            getRequest(getRequestParam);
-            bindPageBarEventListener(getRequestParam);
+        function refreshNotices() {
+            loadTable(state, columns, { emptyText: "No notices found." });
         }
 
-        function query() {
-            var keyword = document.getElementById("keyword").value;
-            var types = document.getElementsByName("type");
-            if (keyword == "") {
-                alert("Get out here Mother Sucker!");
-                return;
-            }
-
-            var type = getSelectedRadio(types);
-            getRequestParam.keyword = keyword;
-            getRequestParam.type = type;
-            getRequest(getRequestParam);
-            window.href += "#wizard";
-
-        }
-
-        function deleteNotice() {
-            if (confirm("确定？")) {
-                var notices = getSelectedCheckbox(document.getElementsByName("selectOne"));
-                if (notices.length != 0) {
-                    deleteRequest("${pageContext.request.contextPath}/api/admin/notices", notices, function () { alert("删除成功，来刷新一下吧"); });
-                } else {
-                    alert("啥都没有选你就删？");
-                }
-
-            }
+        function searchNotices() {
+            state.page = 1;
+            state.params.keyword = $("#keyword").val();
+            state.params.type = $("#type").val();
+            refreshNotices();
         }
 
         function addNotice() {
-            var title = document.getElementById("title").value;
-            var content = document.getElementById("content").value;
+            var data = formData("#noticeForm");
+            if (!data.title || !data.content) {
+                alert("Title and content are required.");
+                return;
+            }
 
-            postRequest("${pageContext.request.contextPath}/api/admin/notices", {
-                title: title,
-                content: content
-            }, function () { alert("添加成功，刷新一下吧"); });
-
+            postRequest("${pageContext.request.contextPath}/api/admin/notices", data, function () {
+                closePopBox();
+                clearForm("#noticeForm");
+                refreshNotices();
+            });
         }
 
         function updateNotice() {
+            var row = getEditedRowData();
+            if (!row) {
+                return;
+            }
 
-            var activeRow = document.getElementById("activeRow");
-
-            var no = activeRow.cells[1].textContent;
-            var title = activeRow.cells[2].getElementsByTagName("input")[0].value;
-            var content = activeRow.cells[3].getElementsByTagName("input")[0].value;
-
-            var data = {
-                no: no,
-                title: title,
-                content: content
-            }; putRequest("${pageContext.request.contextPath}/api/admin/notices", data, function () { alert("更新成功，刷新一下吧"); });
-
+            putRequest("${pageContext.request.contextPath}/api/admin/notices", {
+                no: row.no,
+                title: row.title,
+                content: row.content
+            }, function () {
+                refreshNotices();
+            });
         }
 
+        function deleteNotice() {
+            var notices = getSelectedCheckbox(document.getElementsByName("selectOne"));
+            if (!requireSelection(notices, "notice")) {
+                return;
+            }
+
+            if (confirm("Delete selected notices?")) {
+                deleteRequest("${pageContext.request.contextPath}/api/admin/notices", notices, function () {
+                    refreshNotices();
+                });
+            }
+        }
+
+        $(function () {
+            bindTableEditing(columns);
+            refreshNotices();
+        });
     </script>
-
 </head>
-
 <body>
-    <div>
-        <span id="wizard">
-            当前路径:主页>通知管理
-        </span>
-    </div>
-    <div>
-        <form>
-            <div>
-                <input type="text" id="keyword" />
-                <input type="text" class="hiddenText" />
-                <input type="button" onclick="query()" value="搜索" />
-            </div>
-            <div>
-                按标题<input type="radio" name="type" value="title" checked /> |
-                按发送者<input type="radio" name="type" value="name" />
-            </div>
-        </form>
-    </div>
-    <div>
-        <table id="table" border="1" ondblclick="preUpdate()">
+<main class="app-shell">
+    <header class="page-header">
+        <div>
+            <h1 class="page-title">Notice Management</h1>
+            <p class="breadcrumb">Admin Console / Notices</p>
+        </div>
+        <a class="button-link" href="${pageContext.request.contextPath}/admin/dashboard">Back</a>
+    </header>
+
+    <section class="toolbar">
+        <div class="field grow">
+            <label for="keyword">Keyword</label>
+            <input type="text" id="keyword" placeholder="Search notices" />
+        </div>
+        <div class="field">
+            <label for="type">Search By</label>
+            <select id="type">
+                <option value="">All</option>
+                <option value="title">Title</option>
+                <option value="name">Publisher</option>
+            </select>
+        </div>
+        <button type="button" onclick="searchNotices()">Search</button>
+        <button type="button" onclick="state.params.keyword=''; state.params.type=''; $('#keyword').val(''); $('#type').val(''); searchNotices()">Reset</button>
+    </section>
+
+    <section class="table-panel">
+        <table id="table" class="data-table">
+            <thead>
             <tr>
-                <td>
-                    <input id="selectAll" type="checkbox" onclick="selectAll()" />
-                </td>
-                <td>编号</td>
-                <td>标题</td>
-                <td>内容</td>
-                <td>创建时间</td>
-                <td>发送者</td>
+                <th><input id="selectAll" type="checkbox" onclick="selectAll()" /></th>
+                <th>No.</th>
+                <th>Title</th>
+                <th>Content</th>
+                <th>Created At</th>
+                <th>Publisher</th>
             </tr>
+            </thead>
+            <tbody></tbody>
         </table>
+        <div id="emptyState" class="empty-state"></div>
+    </section>
+
+    <section class="operationBar">
+        <button class="save primary" type="button" onclick="updateNotice()">Save</button>
+        <button class="cancel" type="button" onclick="cancelUpdate()">Cancel</button>
+        <button class="danger" type="button" onclick="deleteNotice()">Delete</button>
+        <button class="primary" type="button" onclick="openPopBox()">Add Notice</button>
+    </section>
+
+    <ul class="pageBar"></ul>
+</main>
+
+<div class="light">
+    <h2 class="modal-header">Add Notice</h2>
+    <form id="noticeForm" action="">
+        <div class="form-grid">
+            <div class="field full">
+                <label for="title">Title</label>
+                <input type="text" id="title" data-field="title" />
+            </div>
+            <div class="field full">
+                <label for="content">Content</label>
+                <textarea id="content" data-field="content"></textarea>
+            </div>
+        </div>
+    </form>
+    <div class="modal-actions">
+        <button type="button" onclick="closePopBox()">Cancel</button>
+        <button class="primary" type="button" onclick="addNotice()">Submit</button>
     </div>
-
-    <div class="light">
-        <div>
-            <form action="">
-
-                <ul class="form-input-list">
-                    <li>
-                        标题
-                    </li>
-                    <li>
-                        <input type="text" id="title" />
-                    </li>
-                    <li>
-                        内容
-                    </li>
-                    <li>
-                        <input type="text" id="content" />
-                    </li>
-                </ul>
-
-            </form>
-        </div>
-        <div class="operationBar">
-            <a href="javascript:void(0)" onclick="addNotice()">提交</a>
-            <a href="javascript:void(0)" onclick="closePopBox()">取消</a>
-        </div>
-    </div>
-    <div class="fade"></div>
-
-    <div" class="operationBar">
-        <a class="save" href="javascript:void(0)" onclick="updateNotice()">保存</a>
-        <a class="cancel" href="javascript:void(0)" onclick="cancelUpdate()">取消</a>
-        <a class="show" href="javascript:void(0)" onclick="deleteNotice()">删除通知</a>
-        <a class="show" href="javascript:void(0)" onclick="openPopBox()">添加通知</a>
-        <a class="show" href="${pageContext.request.contextPath}/admin/dashboard">返回</a>
-        </div>
-        <div>
-            <ul class="pageBar">
-                <li class="prevPage">
-                    <a>
-                        上一页
-                    </a>
-                </li>
-                <li class="nextPage">
-                    <a>
-                        下一页
-                    </a>
-                </li>
-            </ul>
-        </div>
+</div>
+<div class="fade"></div>
 </body>
-
 </html>

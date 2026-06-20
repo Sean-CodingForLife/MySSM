@@ -32,8 +32,9 @@ public class DepartmentController extends BaseController {
 
 	@GetMapping("/api/admin/departments")
 	@ResponseBody
-	public ResponseData queryDepartments(@RequestParam String keyword, @RequestParam Integer startPage,
-			@RequestParam Integer offset) {
+	public ResponseData queryDepartments(@RequestParam(defaultValue = "") String keyword,
+			@RequestParam(required = false) Integer startPage,
+			@RequestParam(required = false) Integer offset) {
 		return departmentService.queryDepartments(keyword, startPage, offset);
 	}
 

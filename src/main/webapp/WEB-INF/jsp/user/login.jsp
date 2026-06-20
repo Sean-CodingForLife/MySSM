@@ -9,8 +9,12 @@
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/requests.js"></script>
     <script type="text/javascript">
         function login() {
-            var account = document.getElementById("account").value;
-            var password = document.getElementById("password").value;
+            var account = $("#account").val();
+            var password = $("#password").val();
+            if (!account || !password) {
+                alert("Account and password are required.");
+                return;
+            }
 
             postRequest("${pageContext.request.contextPath}/api/user/session", {
                 account: account,
@@ -22,17 +26,20 @@
     </script>
 </head>
 <body>
+<main class="auth-panel">
+    <h1>User Login</h1>
     <form action="">
-        <ul class="form-input-list">
-            <li>Account</li>
-            <li><input type="text" id="account" /></li>
-            <li>Password</li>
-            <li><input type="password" id="password" /></li>
-        </ul>
-        <input type="button" onclick="login()" value="Login" />
+        <div class="field">
+            <label for="account">Account</label>
+            <input type="text" id="account" autocomplete="username" />
+        </div>
+        <div class="field">
+            <label for="password">Password</label>
+            <input type="password" id="password" autocomplete="current-password" />
+        </div>
+        <button class="primary" type="button" onclick="login()">Login</button>
     </form>
-    <div>
-        <a href="${pageContext.request.contextPath}/user/register">Register</a>
-    </div>
+    <p><a href="${pageContext.request.contextPath}/user/register">Create an account</a></p>
+</main>
 </body>
 </html>

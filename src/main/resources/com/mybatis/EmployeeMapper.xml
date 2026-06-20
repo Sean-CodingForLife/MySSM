@@ -50,7 +50,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <insert id="addEmployee" parameterType="map">
         insert into employee (name, id, address, mail, phone, qq, email, sex, political_status, birthday, nation, education, major, hobby, description, created_date)
-        values (#{name}, #{id}, #{address}, #{mail}, #{phone}, #{QQ}, #{email}, #{sex}, #{political_status}, #{birthday}, #{nation}, #{education}, #{major}, #{hobby}, #{description}, now())
+        values (#{name}, #{id}, #{address}, #{mail}, #{phone}, #{qq}, #{email}, #{sex}, #{political_status}, #{birthday}, #{nation}, #{education}, #{major}, #{hobby}, #{description}, now())
     </insert>
 
     <update id="updateEmployee" parameterType="map">

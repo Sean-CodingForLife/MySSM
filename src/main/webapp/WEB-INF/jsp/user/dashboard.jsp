@@ -3,6 +3,7 @@
 <html>
 <head>
     <title>User Center</title>
+    <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/my.css" />
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-3.2.1.min.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/requests.js"></script>
     <script type="text/javascript">
@@ -14,15 +15,20 @@
     </script>
 </head>
 <body>
-    <div>
-        <span>User Center</span>
-    </div>
-    <div>
-        <p>Welcome, ${sessionScope.userAccount}</p>
-        <p>Admin pages and APIs are only available to administrators.</p>
-    </div>
-    <div>
-        <a href="javascript:void(0)" onclick="logout()">Logout</a>
-    </div>
+<main class="app-shell">
+    <header class="page-header">
+        <div>
+            <h1 class="page-title">User Center</h1>
+            <p class="breadcrumb">Welcome, ${sessionScope.userAccount}</p>
+        </div>
+        <button type="button" onclick="logout()">Logout</button>
+    </header>
+
+    <section class="table-panel">
+        <div class="empty-state" style="display:block;">
+            User-facing features are separated from administrator-only management pages.
+        </div>
+    </section>
+</main>
 </body>
 </html>

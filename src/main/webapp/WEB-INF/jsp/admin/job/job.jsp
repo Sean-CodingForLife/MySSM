@@ -1,139 +1,140 @@
-<%@ page language = "java" import = "java.util.*" pageEncoding = "UTF-8"%>
+<%@ page language="java" pageEncoding="UTF-8"%>
 
 <html>
-
 <head>
-    <title>
-        职位管理
-    </title>
+    <title>Job Management</title>
     <link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/my.css" />
-
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/jquery-3.2.1.min.js"></script>
-    <script type="text/javascript" src="${pageContext.request.contextPath}/js/my.js"></script>
     <script type="text/javascript" src="${pageContext.request.contextPath}/js/requests.js"></script>
+    <script type="text/javascript" src="${pageContext.request.contextPath}/js/my.js"></script>
     <script type="text/javascript">
+        var state = createListState("${pageContext.request.contextPath}/api/admin/jobs", 10, {
+            keyword: ""
+        });
 
-        var getRequestParam = new GetRequestParam("${pageContext.request.contextPath}/api/admin/jobs", 1, 10, "");
+        var columns = [
+            { key: "no", label: "No." },
+            { key: "name", label: "Name", editable: true },
+            { key: "description", label: "Description", editable: true }
+        ];
 
-        window.onload = function () {
-            getRequest(getRequestParam);
-            bindPageBarEventListener(getRequestParam);
+        function refreshJobs() {
+            loadTable(state, columns, { emptyText: "No jobs found." });
         }
 
-        function query() {
-            var keyword = document.getElementById("keyword").value;
-            getRequestParam.keyword = keyword;
-            getRequest(getRequestParam);
-        }
-
-        function deleteJob() {
-            if (confirm("确定？")) {
-                var jobs = getSelectedCheckbox(document.getElementsByName("selectOne"));
-                if (jobs.length != 0) {
-                    deleteRequest("${pageContext.request.contextPath}/api/admin/jobs", jobs, function () { alert("删除成功，来刷新一下吧"); });
-                } else {
-                    alert("啥都没有选你就删？")
-                }
-
-            }
+        function searchJobs() {
+            state.page = 1;
+            state.params.keyword = $("#keyword").val();
+            refreshJobs();
         }
 
         function addJob() {
-            var name = document.getElementById("name").value;
-            var description = document.getElementById("description").value;
+            var data = formData("#jobForm");
+            if (!data.name) {
+                alert("Job name is required.");
+                return;
+            }
 
-            postRequest("${pageContext.request.contextPath}/api/admin/jobs", {
-                name: name,
-                description: description
-            }, function () { alert("添加成功，刷新一下吧"); });
-
+            postRequest("${pageContext.request.contextPath}/api/admin/jobs", data, function () {
+                closePopBox();
+                clearForm("#jobForm");
+                refreshJobs();
+            });
         }
 
         function updateJob() {
+            var data = getEditedRowData();
+            if (!data) {
+                return;
+            }
 
-            var activeRow = document.getElementById("activeRow");
-
-            var no = activeRow.cells[1].textContent;
-            var name = activeRow.cells[2].getElementsByTagName("input")[0].value;
-            var description = activeRow.cells[3].getElementsByTagName("input")[0].value;
-
-            var data = {
-                no: no,
-                name: name,
-                description: description
-            }; putRequest("${pageContext.request.contextPath}/api/admin/jobs", data, function () { alert("更新成功，刷新一下吧"); });
-
+            putRequest("${pageContext.request.contextPath}/api/admin/jobs", data, function () {
+                refreshJobs();
+            });
         }
 
+        function deleteJob() {
+            var jobs = getSelectedCheckbox(document.getElementsByName("selectOne"));
+            if (!requireSelection(jobs, "job")) {
+                return;
+            }
+
+            if (confirm("Delete selected jobs?")) {
+                deleteRequest("${pageContext.request.contextPath}/api/admin/jobs", jobs, function () {
+                    refreshJobs();
+                });
+            }
+        }
+
+        $(function () {
+            bindTableEditing(columns);
+            refreshJobs();
+        });
     </script>
-
 </head>
-
 <body>
-    <div>
-        <span>
-            当前路径:主页>职位管理
-        </span>
-    </div>
-    <div>
-        <form>
-            <div>
-                <input type="text" id="keyword" />
-                <input type="text" class="hiddenText" />
-                <input type="button" onclick="query()" value="搜索" />
-            </div>
-        </form>
-    </div>
-    <div>
-        <table id="table" border="1" ondblclick="preUpdate()">
+<main class="app-shell">
+    <header class="page-header">
+        <div>
+            <h1 class="page-title">Job Management</h1>
+            <p class="breadcrumb">Admin Console / Jobs</p>
+        </div>
+        <a class="button-link" href="${pageContext.request.contextPath}/admin/dashboard">Back</a>
+    </header>
+
+    <section class="toolbar">
+        <div class="field grow">
+            <label for="keyword">Keyword</label>
+            <input type="text" id="keyword" placeholder="Search by job name" />
+        </div>
+        <button type="button" onclick="searchJobs()">Search</button>
+        <button type="button" onclick="state.params.keyword=''; $('#keyword').val(''); searchJobs()">Reset</button>
+    </section>
+
+    <section class="table-panel">
+        <table id="table" class="data-table">
+            <thead>
             <tr>
-                <td>
-                    <input id="selectAll" type="checkbox" onclick="selectAll()" />
-                </td>
-                <td>编号</td>
-                <td>职位名</td>
-                <td>描述</td>
+                <th><input id="selectAll" type="checkbox" onclick="selectAll()" /></th>
+                <th>No.</th>
+                <th>Name</th>
+                <th>Description</th>
             </tr>
+            </thead>
+            <tbody></tbody>
         </table>
-    </div>
+        <div id="emptyState" class="empty-state"></div>
+    </section>
 
-    <div class="light">
-        <div>
-            <form action="">
-                <label>职位名</label>
-                <input type="text" id="name" />
-                <label>描述</label>
-                <input type="text" id="description" />
-            </form>
-        </div>
-        <div class="operationBar">
-            <a href="javascript:void(0)" onclick="addJob()">提交</a>
-            <a href="javascript:void(0)" onclick="closePopBox()">取消</a>
-        </div>
-    </div>
-    <div class="fade"></div>
+    <section class="operationBar">
+        <button class="save primary" type="button" onclick="updateJob()">Save</button>
+        <button class="cancel" type="button" onclick="cancelUpdate()">Cancel</button>
+        <button class="danger" type="button" onclick="deleteJob()">Delete</button>
+        <button class="primary" type="button" onclick="openPopBox()">Add Job</button>
+    </section>
 
-    <div" class="operationBar">
-        <a class="save" href="javascript:void(0)" onclick="updateJob()">保存</a>
-        <a class="cancel" href="javascript:void(0)" onclick="cancelUpdate()">取消</a>
-        <a class="show" href="javascript:void(0)" onclick="deleteJob()">删除职位</a>
-        <a class="show" href="javascript:void(0)" onclick="openPopBox()">添加职位</a>
-        <a class="show" href="${pageContext.request.contextPath}/admin/dashboard">返回</a>
+    <ul class="pageBar"></ul>
+</main>
+
+<div class="light">
+    <h2 class="modal-header">Add Job</h2>
+    <form id="jobForm" action="">
+        <div class="form-grid">
+            <div class="field">
+                <label for="name">Name</label>
+                <input type="text" id="name" data-field="name" />
+            </div>
+            <div class="field">
+                <label for="description">Description</label>
+                <input type="text" id="description" data-field="description" />
+            </div>
         </div>
-        <div>
-            <ul class="pageBar">
-                <li class="prevPage">
-                    <a>
-                        上一页
-                    </a>
-                </li>
-                <li class="nextPage">
-                    <a>
-                        下一页
-                    </a>
-                </li>
-            </ul>
-        </div>
+    </form>
+    <div class="modal-actions">
+        <button type="button" onclick="closePopBox()">Cancel</button>
+        <button class="primary" type="button" onclick="addJob()">Submit</button>
+    </div>
+</div>
+<div class="fade"></div>
 </body>
-
 </html>
