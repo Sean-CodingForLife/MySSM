@@ -10,22 +10,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 @Controller
 public class DashboardController extends BaseController {
 
-    private static final String ADMIN_DASHBOARD_PAGE = "admin/dashboard";
-    private static final String USER_DASHBOARD_PAGE = "user/dashboard";
+    private static final String DASHBOARD_PAGE = "dashboard";
 
-    @GetMapping("/admin/dashboard")
-    public String toAdminDashboardPage(HttpServletRequest request) {
-        if (MyTokenTool.checkToken("admin", request)) {
-            return ADMIN_DASHBOARD_PAGE;
+    @GetMapping("/dashboard")
+    public String toDashboardPage(HttpServletRequest request) {
+        if (MyTokenTool.checkToken(request)) {
+            request.setAttribute("loginRole", request.getSession().getAttribute("loginRole"));
+            request.setAttribute("loginAccount", request.getSession().getAttribute("loginAccount"));
+            return DASHBOARD_PAGE;
         }
-        return "redirect:/admin/login";
-    }
 
-    @GetMapping("/user/dashboard")
-    public String toUserDashboardPage(HttpServletRequest request) {
-        if (MyTokenTool.checkToken("user", request)) {
-            return USER_DASHBOARD_PAGE;
-        }
-        return "redirect:/user/login";
+        return "redirect:/";
     }
 }

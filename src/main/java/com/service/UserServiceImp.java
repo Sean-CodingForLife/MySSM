@@ -6,6 +6,7 @@ import com.dao.UserDao;
 import com.message.Message;
 import com.po.User;
 import com.responseData.ResponseData;
+import com.security.PasswordHash;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,23 +20,34 @@ public class UserServiceImp implements UserService {
 	UserDao userDao;
 
 	@Override
-	public Message login(User user) {
+	public boolean accountExists(String account) {
+		return userDao.queryUserByAccount(account) != null;
+	}
+
+	@Override
+	public User login(User user) {
 
 		User _user = userDao.queryUserByAccount(user.getAccount());
 
 		if (_user != null) {
-			if (_user.getPassword().equals(user.getPassword())) {
-				return Message.loginSuccess;
-			} else
-				return Message.loginFail_Password;
-		} else
-			return Message.loginFail_Account;
-
+			if (PasswordHash.matches(user.getPassword(), _user.getPassword())) {
+				return _user;
+			}
+		}
+		return null;
 	}
 
 	@Override
 	public Message register(User user) {
+		user.setRole("USER");
+		return addUser(user);
+	}
+
+	@Override
+	public Message addUser(User user) {
 		if (userDao.queryUserByAccount(user.getAccount()) == null) {
+			user.setRole(normalizeRole(user.getRole()));
+			user.setPassword(PasswordHash.hash(user.getPassword()));
 			userDao.addUser(user);
 			return Message.registerSuccess;
 		}
@@ -72,6 +84,12 @@ public class UserServiceImp implements UserService {
 							userList = userDao.queryUsersByStatus(keyword, start, end);
 						}
 						break;
+					case "role":
+						count = userDao.queryUsersCountByRole(keyword);
+						if (count != 0) {
+							userList = userDao.queryUsersByRole(keyword, start, end);
+						}
+						break;
 				}
 				break;
 		}
@@ -87,6 +105,13 @@ public class UserServiceImp implements UserService {
 
 		}
 		return Message.success;
+	}
+
+	private String normalizeRole(String role) {
+		if ("ADMIN".equals(role)) {
+			return "ADMIN";
+		}
+		return "USER";
 	}
 
 }

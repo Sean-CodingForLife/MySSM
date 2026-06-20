@@ -3,19 +3,20 @@ package com.po;
 import java.util.Date;
 
 public class User {
-    private Integer no;
+    private Integer id;
     private String  account;
     private String  password;
     private String  name;
+    private String  role;
     private String  status;
     private Date    created_date;
 
-    public Integer getNo() {
-        return no;
+    public Integer getId() {
+        return id;
     }
 
-    public void setNo(Integer no) {
-        this.no = no;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
     public String getAccount() {
@@ -40,6 +41,14 @@ public class User {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     public String getStatus() {

@@ -20,16 +20,16 @@ public class MyInterceptor implements HandlerInterceptor {
             return true;
         }
 
-        if (path.equals("/admin/dashboard")) {
-            return allowOrRedirect(MyTokenTool.checkToken("admin", request), request, response, "/admin/login");
-        }
-
-        if (path.equals("/user/dashboard")) {
-            return allowOrRedirect(MyTokenTool.checkToken("user", request), request, response, "/user/login");
+        if (path.equals("/dashboard")) {
+            return allowOrRedirect(MyTokenTool.checkToken(request), request, response, "/");
         }
 
         if (isAdminPath(path)) {
-            return allowOrRedirect(MyTokenTool.checkToken("admin", request), request, response, "/admin/login");
+            return allowOrRedirect(MyTokenTool.hasRole("ADMIN", request), request, response, "/");
+        }
+
+        if (isUserPath(path)) {
+            return allowOrRedirect(MyTokenTool.hasRole("USER", request), request, response, "/");
         }
 
         return true;
@@ -37,13 +37,10 @@ public class MyInterceptor implements HandlerInterceptor {
 
     private boolean isPublicPath(String path) {
         return path.equals("/")
-                || path.equals("/index.jsp")
-                || path.equals("/admin/login")
-                || path.equals("/user/login")
                 || path.equals("/user/register")
-                || path.equals("/api/admin/session")
-                || path.equals("/api/user/session")
+                || path.equals("/api/session")
                 || path.equals("/api/public/users")
+                || path.startsWith("/images/")
                 || path.startsWith("/js/")
                 || path.startsWith("/css/");
     }
@@ -53,9 +50,14 @@ public class MyInterceptor implements HandlerInterceptor {
                 || path.startsWith("/api/admin/");
     }
 
+    private boolean isUserPath(String path) {
+        return path.startsWith("/user/")
+                && !path.equals("/user/register");
+    }
+
     private boolean allowOrRedirect(boolean allowed, HttpServletRequest request, HttpServletResponse response)
             throws Exception {
-        return allowOrRedirect(allowed, request, response, "/user/login");
+        return allowOrRedirect(allowed, request, response, "/");
     }
 
     private boolean allowOrRedirect(boolean allowed, HttpServletRequest request, HttpServletResponse response,

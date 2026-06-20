@@ -10,37 +10,26 @@ import javax.servlet.http.HttpSession;
 
 public class MyTokenTool {
 
-    private static final String USER_TYPE = "user";
-    private static final String ADMIN_TYPE = "admin";
-    private static final String USER_TOKEN_COOKIE = "user_token";
-    private static final String ADMIN_TOKEN_COOKIE = "admin_token";
-    private static final String USER_TOKEN_SESSION = "userToken";
-    private static final String ADMIN_TOKEN_SESSION = "adminToken";
+    private static final String TOKEN_COOKIE = "myssm_token";
+    private static final String TOKEN_SESSION = "sessionToken";
 
-    public static boolean checkToken(String type, HttpServletRequest request) {
+    public static boolean checkToken(HttpServletRequest request) {
 
         if (request == null) {
             throw new NullPointerException("Request is null");
         }
 
         HttpSession session = request.getSession();
-        String nekot = MyCookieTool.getCookiesValueByName(getCookieName(type), request.getCookies());
-        String token = null;
-
-        switch(type) {
-            case USER_TYPE :
-                token = (String) session.getAttribute(USER_TOKEN_SESSION);
-            break;
-            case ADMIN_TYPE :
-                token = (String) session.getAttribute(ADMIN_TOKEN_SESSION);
-            break;
-            default : 
-                return false;
-        }
+        String nekot = MyCookieTool.getCookiesValueByName(TOKEN_COOKIE, request.getCookies());
+        String token = (String) session.getAttribute(TOKEN_SESSION);
         return nekot != null && nekot.equals(token);
     }
 
-    public static void addToken(String type, HttpServletRequest request, HttpServletResponse response) {
+    public static boolean hasRole(String role, HttpServletRequest request) {
+        return checkToken(request) && role.equals(request.getSession().getAttribute("loginRole"));
+    }
+
+    public static void addToken(HttpServletRequest request, HttpServletResponse response) {
 
         Random random = new Random();
         Date date = new Date();
@@ -48,43 +37,20 @@ public class MyTokenTool {
         HttpSession session = request.getSession();
         String sToken = token.toString();
 
-        switch (type) {
-            case USER_TYPE:
-                session.setAttribute(USER_TOKEN_SESSION, sToken);
-                break;
-            case ADMIN_TYPE:
-                session.setAttribute(ADMIN_TOKEN_SESSION, sToken);
-                break;
-            default:
-                return;
-        }
-        Cookie cookie = new Cookie(getCookieName(type), sToken);
+        session.setAttribute(TOKEN_SESSION, sToken);
+        Cookie cookie = new Cookie(TOKEN_COOKIE, sToken);
         cookie.setPath(request.getContextPath() + "/");
+        cookie.setHttpOnly(true);
         response.addCookie(cookie);
     }
 
-    public static void removeToken(String type, HttpServletRequest request, HttpServletResponse response) {
+    public static void removeToken(HttpServletRequest request, HttpServletResponse response) {
         HttpSession session = request.getSession();
-        if (USER_TYPE.equals(type)) {
-            session.removeAttribute(USER_TOKEN_SESSION);
-            session.removeAttribute("userAccount");
-        } else if (ADMIN_TYPE.equals(type)) {
-            session.removeAttribute(ADMIN_TOKEN_SESSION);
-            session.removeAttribute("adminUserAccount");
-        } else {
-            return;
-        }
+        session.removeAttribute(TOKEN_SESSION);
 
-        Cookie cookie = new Cookie(getCookieName(type), "");
+        Cookie cookie = new Cookie(TOKEN_COOKIE, "");
         cookie.setPath(request.getContextPath() + "/");
         cookie.setMaxAge(0);
         response.addCookie(cookie);
-    }
-
-    private static String getCookieName(String type) {
-        if (ADMIN_TYPE.equals(type)) {
-            return ADMIN_TOKEN_COOKIE;
-        }
-        return USER_TOKEN_COOKIE;
     }
 }

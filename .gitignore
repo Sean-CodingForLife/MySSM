@@ -1,8 +1,5 @@
 target/
 
-.classpath
-.project
-.settings/
 .vscode/
 .idea/
 .smarttomcat/

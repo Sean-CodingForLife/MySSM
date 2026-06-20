@@ -1,58 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
-	xmlns:context="http://www.springframework.org/schema/context"
-	xmlns:mvc = "http://www.springframework.org/schema/mvc"
-	xmlns:p="http://www.springframework.org/schema/p"
-	xsi:schemaLocation="
-		http://www.springframework.org/schema/mvc
-		http://www.springframework.org/schema/mvc/spring-mvc.xsd
-    	http://www.springframework.org/schema/beans 
-    	http://www.springframework.org/schema/beans/spring-beans.xsd
-        http://www.springframework.org/schema/context 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/mvc
+        http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
         http://www.springframework.org/schema/context/spring-context.xsd">
-	<!-- 使用扫描机制，扫描包 -->
-	<context:component-scan base-package = "com.controller" />
-	
-	<!--  配置静态资源，运行js目录下的所有文件可见 -->
-	<mvc:resources location = "/js/"  mapping = "/js/**"></mvc:resources>
-	<mvc:resources location = "/css/" mapping = "/css/**"></mvc:resources>
 
-	<mvc:interceptors>
-		<mvc:interceptor>
-			<mvc:mapping path="/**" />
-			<bean class="com.interceptor.MyInterceptor" id="MyInterceptor" />
-		</mvc:interceptor>
-	</mvc:interceptors>
+    <!-- Scan Spring MVC controllers. -->
+    <context:component-scan base-package="com.controller"/>
 
-	<!-- 注册格式转换器 -->
-	<bean id = "conversionService" class = "org.springframework.format.support.FormattingConversionServiceFactoryBean">
-	</bean>
-	
-	<mvc:annotation-driven conversion-service = "conversionService"/>
-	
-	<!-- 配置消息属性文件 -->
-	<bean id = "messageSource" class = "org.springframework.context.support.ReloadableResourceBundleMessageSource">
-	
-		<property name = "basename" value = "/WEB-INF/resource/errorMessages"/>
-	
-	</bean>
-	
-	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"  
-        p:defaultEncoding="UTF-8"  
-        p:maxUploadSize="5400000"  
-        p:uploadTempDir="fileUpload/temp" 
-    > 
-      <!--任意盘:\spring mvc workspace\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\fileUpload  -->  
-    </bean> 
-	
-	<!-- 配置视图解析器 -->
-	<bean
-		class = "org.springframework.web.servlet.view.InternalResourceViewResolver"
-		id = "internalResourceViewResolver">
-		<!-- 前缀 -->
-		<property name="prefix" value="/WEB-INF/jsp/" />
-		<!-- 后缀 -->
-		<property name="suffix" value=".jsp" />
-	</bean>
+    <!-- Serve static web resources through Spring MVC. -->
+    <mvc:resources location="/js/" mapping="/js/**"/>
+    <mvc:resources location="/css/" mapping="/css/**"/>
+    <mvc:resources location="/images/" mapping="/images/**"/>
+
+    <mvc:interceptors>
+        <bean class="org.springframework.web.servlet.i18n.LocaleChangeInterceptor">
+            <property name="paramName" value="lang"/>
+        </bean>
+        <mvc:interceptor>
+            <mvc:mapping path="/**"/>
+            <bean class="com.interceptor.MyInterceptor" id="MyInterceptor"/>
+        </mvc:interceptor>
+    </mvc:interceptors>
+
+    <!-- Register format converters. -->
+    <bean id="conversionService" class="org.springframework.format.support.FormattingConversionServiceFactoryBean"/>
+
+    <mvc:annotation-driven conversion-service="conversionService"/>
+
+    <bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
+        <property name="defaultLocale" value="zh_CN"/>
+    </bean>
+
+    <bean id="multipartResolver"
+          class="org.springframework.web.multipart.commons.CommonsMultipartResolver"
+          p:defaultEncoding="UTF-8"
+          p:maxUploadSize="5400000"
+          p:uploadTempDir="fileUpload/temp"/>
+
+    <!-- Resolve controller view names to JSP files. -->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+          id="internalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
 </beans>

@@ -10,8 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
@@ -33,6 +33,12 @@ public class UserController extends BaseController {
 	public ResponseData queryUser(@RequestParam String keyword, @RequestParam String type, @RequestParam Integer startPage,
 			@RequestParam Integer offset) {
 		return userService.queryUsers(keyword, type, startPage, offset);
+	}
+
+	@PostMapping("/api/admin/users")
+	@ResponseBody
+	public Message addUser(@RequestBody User user) {
+		return userService.addUser(user);
 	}
 
 	@DeleteMapping("/api/admin/users")

@@ -13,10 +13,12 @@ public interface UserDao {
 	public Integer deleteUser(User user);
 	public Integer queryUsersCountByName(  @Param("keyword") String keyword);
 	public Integer queryUsersCountByStatus(@Param("keyword") String keyword);
+	public Integer queryUsersCountByRole(  @Param("keyword") String keyword);
 	
 	public List<User> queryUsers(                                          @Param("start") Integer start, @Param("end") Integer end);
 	public List<User> queryUsersByName(  @Param("keyword") String keyword, @Param("start") Integer start, @Param("end") Integer end);
 	public List<User> queryUsersByStatus(@Param("keyword") String keyword, @Param("start") Integer start, @Param("end") Integer end);
+	public List<User> queryUsersByRole(  @Param("keyword") String keyword, @Param("start") Integer start, @Param("end") Integer end);
 	
 	public User       queryUserByAccount(String              keyword);
 }

@@ -1,19 +1,19 @@
 # MySSM
 
-MySSM is a legacy SSM learning project that has been reorganized as a standard Maven Web application. It uses Spring MVC, Spring, MyBatis, JSP, and MySQL to implement a simple personnel management system.
+MySSM is a legacy SSM learning project reorganized as a standard Maven Web application. It now targets a general-purpose backend management system instead of a fixed business domain.
 
-The project was originally written as an Eclipse/Tomcat style Java Web project. This repository keeps the original SSM/JSP architecture, while moving generated files and MyBatis resources into a Maven-friendly layout.
+The project keeps the original Spring MVC, Spring, MyBatis, JSP, and MySQL architecture while removing domain-specific HR modules. It is useful as a small admin-system learning project and as a stepping stone toward a future Spring Boot + Vue migration.
 
 ## Features
 
-- Admin and user login
+- Unified login with admin/user roles
 - User registration
-- Employee management
-- Department management
-- Job/position management
-- Notice management
-- Basic login interception
+- User management
+- User profile, message, and settings pages
+- Basic admin/user route interception
+- `zh-CN` and `en-US` language switching
 - JSP pages with jQuery-based AJAX requests
+- General landing page and role-aware dashboard
 
 ## Tech Stack
 
@@ -22,6 +22,7 @@ The project was originally written as an Eclipse/Tomcat style Java Web project. 
 - Spring MVC
 - MyBatis 3.5.16
 - MyBatis-Spring 2.1.2
+- Spring Security Crypto
 - Jackson 2.13.5
 - SLF4J 1.7 + Logback 1.2
 - JSP + JSTL
@@ -55,6 +56,7 @@ MySSM/
   src/main/webapp/
     WEB-INF/
     css/
+    images/
     js/
     index.jsp
   pom.xml
@@ -69,7 +71,7 @@ MySSM/
 - Tomcat 8.5 or Tomcat 9
 - IntelliJ IDEA with Smart Tomcat, or IDEA Ultimate with built-in Tomcat support
 
-This project has been tested with Tomcat 9 after migration. If port `8080` is occupied, change Tomcat to `8081` or stop the process using that port.
+If port `8080` is occupied, change Tomcat to `8081` or stop the process using that port.
 
 ## Database Setup
 
@@ -91,7 +93,7 @@ Example:
 
 ```properties
 jdbc.driver=com.mysql.cj.jdbc.Driver
-jdbc.url=jdbc:mysql://localhost:3306/myssm_personnel?characterEncoding=utf8
+jdbc.url=jdbc:mysql://localhost:3306/myssm_admin?characterEncoding=utf8
 jdbc.username=root
 jdbc.password=your_password
 jdbc.maxTotal=30
@@ -106,7 +108,8 @@ account: admin
 password: admin
 ```
 
-The password is stored as an MD5 value because the original login page hashes the password before submitting it.
+Passwords are stored as BCrypt hashes generated on the server. Existing MD5 password data from older versions must be reset or recreated.
+Public registration creates regular `USER` accounts only. New `ADMIN` accounts are created from the admin user management page after an administrator logs in.
 
 ## Run In IntelliJ IDEA With Smart Tomcat
 
@@ -137,23 +140,22 @@ The password is stored as an MD5 value because the original login page hashes th
 Main routes:
 
 ```text
-GET  /admin/login
-POST /api/admin/session
-GET  /admin/dashboard
-GET  /user/login
-GET  /user/register
-POST /api/public/users
-POST /api/user/session
-GET  /user/dashboard
+GET    /
+POST   /api/session
+DELETE /api/session
+GET    /dashboard
+GET    /admin/users
+GET    /api/admin/users
+POST   /api/admin/users
+DELETE /api/admin/users
+GET    /user/register
+GET    /user/profile
+GET    /user/messages
+GET    /user/settings
+POST   /api/public/users
 ```
 
-Admin pages are under `/admin/...`; admin JSON APIs are under `/api/admin/...`. Only the routes listed here are supported.
-
-If using port `8081`, visit:
-
-```text
-http://localhost:8081/myssm
-```
+`/dashboard` is shared by both admin and user logins. Accounts are stored in `sys_user` and authorization is role based. Admin users see admin management entries; regular users see only user-facing entries. Admin pages are under `/admin/...`; user pages are under `/user/...`; admin JSON APIs are under `/api/admin/...`.
 
 ## Build With Maven
 
@@ -192,7 +194,7 @@ Use Tomcat 8.5 or 9. This project depends on `javax.servlet`.
 Check:
 
 - MySQL is running
-- Database `myssm_personnel` exists
+- Database `myssm_admin` exists
 - `jdbc.username` and `jdbc.password` are correct
 - `database/schema.sql` has been executed
 
@@ -202,10 +204,10 @@ Reload Maven after pulling dependency changes. This project intentionally stays 
 
 ## Notes
 
-This is still a legacy SSM/JSP project. The current goal is to make it reproducible and easy to run. A future migration path could be:
+This is still a legacy SSM/JSP project. The current goal is to keep it reproducible, generic, and easy to run. A future migration path could be:
 
-- Upgrade dependencies
+- Convert to Spring Boot
+- Replace JSP with Vue 3 + Vite + Element Plus
 - Replace custom JSON utilities with Jackson completely
 - Improve authentication and authorization
-- Convert to Spring Boot
-- Split frontend and backend
+- Add reusable business modules on top of the generic admin foundation

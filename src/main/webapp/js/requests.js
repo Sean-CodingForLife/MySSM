@@ -2,7 +2,7 @@ function responseMessage(data, fallback) {
     if (data && data.message) {
         return data.message;
     }
-    return fallback || "Operation failed.";
+    return fallback || (window.I18N && window.I18N.requestFailed) || "Request failed.";
 }
 
 function apiRequest(method, url, data, success, options) {
@@ -28,9 +28,12 @@ function apiRequest(method, url, data, success, options) {
             }
         },
         error: function (xhr) {
-            var message = "Request failed. Please check the server log.";
+            var message = (window.I18N && window.I18N.requestFailed) || "Request failed.";
             if (xhr && xhr.responseJSON && xhr.responseJSON.message) {
                 message = xhr.responseJSON.message;
+            }
+            if (xhr && xhr.status) {
+                message = xhr.status + " " + (xhr.statusText || "") + "\n" + message;
             }
             alert(message);
         }

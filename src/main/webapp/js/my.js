@@ -36,9 +36,15 @@ function tableParams(state) {
     return params;
 }
 
-function displayValue(value) {
+function displayValue(value, column) {
     if (value === null || value === undefined || value === "null") {
         return "";
+    }
+    if (column && column.key === "status" && window.I18N && window.I18N.statuses && window.I18N.statuses[value]) {
+        return window.I18N.statuses[value];
+    }
+    if (column && column.key === "role" && window.I18N && window.I18N.roles && window.I18N.roles[value]) {
+        return window.I18N.roles[value];
     }
     return value;
 }
@@ -77,7 +83,7 @@ function renderTable(rows, columns, options) {
             var checkbox = document.createElement("input");
             checkbox.type = "checkbox";
             checkbox.name = "selectOne";
-            checkbox.value = row.no;
+            checkbox.value = row.id;
             selectCell.appendChild(checkbox);
             tr.appendChild(selectCell);
         }
@@ -85,7 +91,7 @@ function renderTable(rows, columns, options) {
         columns.forEach(function (column) {
             var td = document.createElement("td");
             td.setAttribute("data-key", column.key);
-            td.textContent = displayValue(row[column.key]);
+            td.textContent = displayValue(row[column.key], column);
             tr.appendChild(td);
         });
 
@@ -98,7 +104,7 @@ function setEmptyState(isEmpty, text) {
     if (!empty) {
         return;
     }
-    empty.textContent = text || "No records found.";
+    empty.textContent = text || (window.I18N && window.I18N.noRecords) || "No records found.";
     empty.style.display = isEmpty ? "block" : "none";
 }
 
@@ -122,11 +128,14 @@ function drawPageBar(count, state, columns, options) {
         pageBar.appendChild(li);
     }
 
-    appendButton("Previous", Math.max(1, state.page - 1), state.page <= 1, false);
+    var previousText = (options && options.previousText) || (window.I18N && window.I18N.previous) || "Previous";
+    var nextText = (options && options.nextText) || (window.I18N && window.I18N.next) || "Next";
+
+    appendButton(previousText, Math.max(1, state.page - 1), state.page <= 1, false);
     for (var i = 1; i <= maxPage; i++) {
         appendButton(i, i, false, i === Number(state.page));
     }
-    appendButton("Next", Math.min(maxPage, state.page + 1), state.page >= maxPage, false);
+    appendButton(nextText, Math.min(maxPage, state.page + 1), state.page >= maxPage, false);
 
     $(pageBar).off("click").on("click", "li", function () {
         if ($(this).hasClass("disabled") || $(this).hasClass("page-item-active")) {
@@ -204,7 +213,7 @@ function cancelUpdate() {
         }
         var cell = TablePage.activeRow.querySelector("td[data-key='" + column.key + "']");
         if (cell) {
-            cell.textContent = displayValue(rowData[column.key]);
+            cell.textContent = displayValue(rowData[column.key], column);
         }
     });
 
@@ -216,7 +225,7 @@ function getSelectedCheckbox(checkboxList) {
     var rows = [];
     for (var i = 0; i < checkboxList.length; i++) {
         if (checkboxList[i].checked) {
-            rows.push({ no: parseInt(checkboxList[i].value, 10) });
+            rows.push({ id: parseInt(checkboxList[i].value, 10) });
         }
     }
     return rows;
@@ -266,7 +275,8 @@ function formData(selector) {
 
 function requireSelection(rows, label) {
     if (!rows.length) {
-        alert("Please select at least one " + label + ".");
+        var template = (window.I18N && window.I18N.selectRequired) || "Please select at least one {0}.";
+        alert(template.replace("{0}", label));
         return false;
     }
     return true;
