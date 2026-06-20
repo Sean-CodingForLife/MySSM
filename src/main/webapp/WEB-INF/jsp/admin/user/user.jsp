@@ -16,6 +16,7 @@
             confirmTitle: "<spring:message code="common.confirm"/>",
             cancel: "<spring:message code="common.cancel"/>",
             confirm: "<spring:message code="common.confirm"/>",
+            loading: "<spring:message code="common.loading"/>",
             statuses: {
                 ACTIVE: "<spring:message code="status.ACTIVE"/>",
                 DISABLED: "<spring:message code="status.DISABLED"/>"

@@ -18,13 +18,16 @@
     </header>
 
     <section class="dashboard-grid">
-        <% if ("ADMIN".equals(request.getAttribute("loginRole"))) { %>
-        <a href="${pageContext.request.contextPath}/admin/users"><spring:message code="dashboard.users"/></a>
-        <% } else { %>
-        <a href="${pageContext.request.contextPath}/user/profile"><spring:message code="dashboard.profile"/></a>
-        <a href="${pageContext.request.contextPath}/user/messages"><spring:message code="dashboard.messages"/></a>
-        <a href="${pageContext.request.contextPath}/user/settings"><spring:message code="dashboard.settings"/></a>
-        <% } %>
+        <%
+            java.util.List<?> dashboardMenus = (java.util.List<?>) session.getAttribute("loginMenus");
+            if (dashboardMenus != null) {
+                for (Object item : dashboardMenus) {
+                    com.po.Menu menu = (com.po.Menu) item;
+        %>
+        <a href="${pageContext.request.contextPath}<%= menu.getPath() %>"><%= menu.getName() %></a>
+        <%      }
+            }
+        %>
     </section>
 <%@ include file="common/app-shell-end.jsp" %>
 </body>

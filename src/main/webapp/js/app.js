@@ -1,3 +1,47 @@
+var appLoadingCount = 0;
+
+function loadingText() {
+    return (window.I18N && window.I18N.loading) || "Processing...";
+}
+
+function ensureLoadingOverlay() {
+    var overlay = document.getElementById("appLoadingOverlay");
+    if (overlay) {
+        return overlay;
+    }
+
+    overlay = document.createElement("div");
+    overlay.id = "appLoadingOverlay";
+    overlay.className = "app-loading-overlay";
+    overlay.setAttribute("aria-live", "polite");
+    overlay.setAttribute("aria-busy", "true");
+    overlay.innerHTML = '<div class="app-loading-panel">'
+        + '<div class="spinner-border text-primary" role="status" aria-hidden="true"></div>'
+        + '<span data-loading-text></span>'
+        + '</div>';
+    document.body.appendChild(overlay);
+    return overlay;
+}
+
+function showAppLoading(message) {
+    appLoadingCount += 1;
+    var overlay = ensureLoadingOverlay();
+    overlay.querySelector("[data-loading-text]").textContent = message || loadingText();
+    overlay.classList.add("show");
+}
+
+function hideAppLoading() {
+    appLoadingCount = Math.max(0, appLoadingCount - 1);
+    if (appLoadingCount > 0) {
+        return;
+    }
+
+    var overlay = document.getElementById("appLoadingOverlay");
+    if (overlay) {
+        overlay.classList.remove("show");
+    }
+}
+
 function notifyApp(message, type) {
     var text = message || "";
     if (!text) {

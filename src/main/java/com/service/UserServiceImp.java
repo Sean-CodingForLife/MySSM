@@ -49,6 +49,7 @@ public class UserServiceImp implements UserService {
 			user.setRole(normalizeRole(user.getRole()));
 			user.setPassword(PasswordHash.hash(user.getPassword()));
 			userDao.addUser(user);
+			userDao.assignUserRole(user.getId(), user.getRole());
 			return Message.registerSuccess;
 		}
 		return Message.registerFail;
@@ -99,6 +100,7 @@ public class UserServiceImp implements UserService {
 	@Override
 	public Message deleteUsers(List<User> users) {
 		for (User user : users) {
+			userDao.deleteUserRoles(user.getId());
 			if (userDao.deleteUser(user) == 0) {
 				return Message.fail;
 			}

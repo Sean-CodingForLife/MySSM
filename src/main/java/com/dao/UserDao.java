@@ -14,6 +14,8 @@ public interface UserDao {
 	public Integer queryUsersCountByName(  @Param("keyword") String keyword);
 	public Integer queryUsersCountByStatus(@Param("keyword") String keyword);
 	public Integer queryUsersCountByRole(  @Param("keyword") String keyword);
+	public Integer assignUserRole(@Param("userId") Integer userId, @Param("roleCode") String roleCode);
+	public Integer deleteUserRoles(@Param("userId") Integer userId);
 	
 	public List<User> queryUsers(                                          @Param("start") Integer start, @Param("end") Integer end);
 	public List<User> queryUsersByName(  @Param("keyword") String keyword, @Param("start") Integer start, @Param("end") Integer end);

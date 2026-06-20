@@ -8,6 +8,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import java.util.List;
+
+import com.po.Permission;
+
 public class MyTokenTool {
 
     private static final String TOKEN_COOKIE = "myssm_token";
@@ -26,7 +30,43 @@ public class MyTokenTool {
     }
 
     public static boolean hasRole(String role, HttpServletRequest request) {
-        return checkToken(request) && role.equals(request.getSession().getAttribute("loginRole"));
+        if (!checkToken(request)) {
+            return false;
+        }
+        Object roles = request.getSession().getAttribute("loginRole");
+        if (roles == null || role == null) {
+            return false;
+        }
+        for (String item : roles.toString().split(",")) {
+            if (role.equals(item.trim())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean hasPermission(String method, String path, HttpServletRequest request) {
+        if (!checkToken(request)) {
+            return false;
+        }
+        Object permissions = request.getSession().getAttribute("loginPermissions");
+        if (!(permissions instanceof List<?>)) {
+            return false;
+        }
+        for (Object item : (List<?>) permissions) {
+            if (!(item instanceof Permission)) {
+                continue;
+            }
+            Permission permission = (Permission) item;
+            if (matches(permission.getMethod(), method) && matches(permission.getPath(), path)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean matches(String expected, String actual) {
+        return "*".equals(expected) || expected.equalsIgnoreCase(actual);
     }
 
     public static void addToken(HttpServletRequest request, HttpServletResponse response) {

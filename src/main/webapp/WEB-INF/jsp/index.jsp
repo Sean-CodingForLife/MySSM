@@ -9,6 +9,7 @@
         window.I18N = {
             accountPasswordRequired: "<spring:message code="auth.required.accountPassword"/>",
             captchaRequired: "<spring:message code="auth.captcha.required"/>",
+            loading: "<spring:message code="common.loading"/>",
             requestFailed: "<spring:message code="common.requestFailed"/>"
         };
 

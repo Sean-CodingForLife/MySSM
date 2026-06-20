@@ -1,7 +1,6 @@
 <%
     String activeNav = String.valueOf(request.getAttribute("activeNav"));
-    String loginRole = String.valueOf(session.getAttribute("loginRole"));
-    boolean isAdmin = "ADMIN".equals(loginRole);
+    java.util.List<?> loginMenus = (java.util.List<?>) session.getAttribute("loginMenus");
 %>
 <div class="app-frame">
     <aside class="app-sidebar">
@@ -14,25 +13,16 @@
                href="${pageContext.request.contextPath}/dashboard">
                 <spring:message code="dashboard.title"/>
             </a>
-            <% if (isAdmin) { %>
-            <a class="nav-link <%= "users".equals(activeNav) ? "active" : "" %>"
-               href="${pageContext.request.contextPath}/admin/users">
-                <spring:message code="dashboard.users"/>
+            <% if (loginMenus != null) {
+                for (Object item : loginMenus) {
+                    com.po.Menu menu = (com.po.Menu) item;
+            %>
+            <a class="nav-link <%= menu.getCode().equals(activeNav) ? "active" : "" %>"
+               href="${pageContext.request.contextPath}<%= menu.getPath() %>">
+                <%= menu.getName() %>
             </a>
-            <% } else { %>
-            <a class="nav-link <%= "profile".equals(activeNav) ? "active" : "" %>"
-               href="${pageContext.request.contextPath}/user/profile">
-                <spring:message code="dashboard.profile"/>
-            </a>
-            <a class="nav-link <%= "messages".equals(activeNav) ? "active" : "" %>"
-               href="${pageContext.request.contextPath}/user/messages">
-                <spring:message code="dashboard.messages"/>
-            </a>
-            <a class="nav-link <%= "settings".equals(activeNav) ? "active" : "" %>"
-               href="${pageContext.request.contextPath}/user/settings">
-                <spring:message code="dashboard.settings"/>
-            </a>
-            <% } %>
+            <%  }
+            } %>
         </nav>
     </aside>
 

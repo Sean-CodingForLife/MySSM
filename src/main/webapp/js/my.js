@@ -100,6 +100,12 @@ function renderTable(rows, columns, options) {
             tr.appendChild(td);
         });
 
+        if (typeof options.actions === "function") {
+            var actionCell = document.createElement("td");
+            actionCell.appendChild(options.actions(row));
+            tr.appendChild(actionCell);
+        }
+
         tbody.appendChild(tr);
     });
 }
@@ -289,15 +295,15 @@ function selectAll() {
     }
 }
 
-function openPopBox() {
-    var modalElement = document.getElementById("userModal");
+function openPopBox(modalId) {
+    var modalElement = document.getElementById(modalId || "userModal");
     if (modalElement && window.bootstrap) {
         bootstrap.Modal.getOrCreateInstance(modalElement).show();
     }
 }
 
-function closePopBox() {
-    var modalElement = document.getElementById("userModal");
+function closePopBox(modalId) {
+    var modalElement = document.getElementById(modalId || "userModal");
     if (modalElement && window.bootstrap) {
         bootstrap.Modal.getOrCreateInstance(modalElement).hide();
     }

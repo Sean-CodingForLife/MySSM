@@ -11,6 +11,11 @@ function showMessage(message, type) {
 
 function apiRequest(method, url, data, success, options) {
     var requestOptions = options || {};
+    var shouldShowLoading = requestOptions.loading !== false && method !== "get";
+    if (shouldShowLoading) {
+        showAppLoading(requestOptions.loadingText);
+    }
+
     var ajaxOptions = {
         url: url,
         type: method,
@@ -46,6 +51,14 @@ function apiRequest(method, url, data, success, options) {
             if (typeof requestOptions.onError === "function") {
                 requestOptions.onError(xhr);
             }
+        },
+        complete: function () {
+            if (shouldShowLoading) {
+                hideAppLoading();
+            }
+            if (typeof requestOptions.onComplete === "function") {
+                requestOptions.onComplete();
+            }
         }
     };
 
@@ -64,10 +77,10 @@ function postRequest(url, data, success, options) {
     return apiRequest("post", url, data, success, options);
 }
 
-function putRequest(url, data, success) {
-    return apiRequest("put", url, data, success);
+function putRequest(url, data, success, options) {
+    return apiRequest("put", url, data, success, options);
 }
 
-function deleteRequest(url, data, success) {
-    return apiRequest("delete", url, data, success);
+function deleteRequest(url, data, success, options) {
+    return apiRequest("delete", url, data, success, options);
 }

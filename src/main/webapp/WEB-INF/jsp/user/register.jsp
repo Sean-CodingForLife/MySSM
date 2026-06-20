@@ -10,6 +10,7 @@
             registerRequired: "<spring:message code="auth.required.register"/>",
             passwordMin: "<spring:message code="auth.password.min"/>",
             passwordMismatch: "<spring:message code="auth.password.mismatch"/>",
+            loading: "<spring:message code="common.loading"/>",
             requestFailed: "<spring:message code="common.requestFailed"/>"
         };
 
