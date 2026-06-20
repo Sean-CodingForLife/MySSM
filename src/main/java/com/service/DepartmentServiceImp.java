@@ -3,7 +3,7 @@ package com.service;
 import java.util.List;
 
 import com.po.Department;
-import com.reponseData.ResponseData;
+import com.responseData.ResponseData;
 import com.dao.DepartmentDao;
 import com.dao.Employee_Department_RelateDao;
 import com.message.Message;
@@ -28,7 +28,7 @@ public class DepartmentServiceImp implements DepartmentService {
         Integer count = 0;
         List<Department> departments = null;
 
-        if (keyword == "" && (startPage == null || offset == null)) {
+        if ("".equals(keyword) && (startPage == null || offset == null)) {
             count = departmentDao.queryDepartmentsCount();
             if (count != 0) {
                 departments = departmentDao.queryAllDepartment();
@@ -42,7 +42,7 @@ public class DepartmentServiceImp implements DepartmentService {
                 case "":
                     count = departmentDao.queryDepartmentsCount();
                     if (count != 0) {
-                        departments = departmentDao.queryDepartments();
+                        departments = departmentDao.queryDepartments(start, end);
                     }
                     break;
                 default:
@@ -61,8 +61,8 @@ public class DepartmentServiceImp implements DepartmentService {
     public Message deleteDepartments(List<Department> departments) {
 
         for (Department department : departments) {
-            if ((employee_Department_RelateDao.deleteEmployee_Department_RelatesByDepartment(department) == 0)
-                    || (departmentDao.deleteDepartment(department) == 0)) {
+            employee_Department_RelateDao.deleteEmployee_Department_RelatesByDepartment(department);
+            if (departmentDao.deleteDepartment(department) == 0) {
                 return Message.fail;
             }
         }

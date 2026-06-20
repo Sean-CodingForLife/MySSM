@@ -5,12 +5,11 @@ import java.util.List;
 import com.dao.UserDao;
 import com.message.Message;
 import com.po.User;
-import com.reponseData.ResponseData;
+import com.responseData.ResponseData;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Service("UserService")
 @Transactional
@@ -36,7 +35,7 @@ public class UserServiceImp implements UserService {
 
 	@Override
 	public Message register(User user) {
-		if (userDao.queryUserByAccount(user.getAccount()) != null) {
+		if (userDao.queryUserByAccount(user.getAccount()) == null) {
 			userDao.addUser(user);
 			return Message.registerSuccess;
 		}
@@ -44,8 +43,7 @@ public class UserServiceImp implements UserService {
 	}
 
 	@Override
-	public ResponseData queryUsers(@RequestParam String keyword, @RequestParam String type,
-			@RequestParam Integer startPage, @RequestParam Integer offset) {
+	public ResponseData queryUsers(String keyword, String type, Integer startPage, Integer offset) {
 
 		Integer count = 0;
 		Integer start = (startPage - 1) * offset;

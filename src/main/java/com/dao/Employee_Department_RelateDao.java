@@ -11,6 +11,7 @@ import org.apache.ibatis.annotations.Param;
 public interface Employee_Department_RelateDao {
     public List<Employee_Department_Relate> queryEmployee_Department_RelatesByDepartment(@Param("department") Department department, @Param("start") Integer start,
             @Param("end") Integer end);
+    public Integer queryEmployee_Department_RelatesCountByDepartment(Department department);
 
     public Department queryDepartmentByEmployee(Employee employee);
 

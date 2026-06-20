@@ -1,7 +1,9 @@
 package com.message;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.myTool.Jsonable;
 
+@JsonFormat(shape = JsonFormat.Shape.OBJECT)
 public enum Message implements Jsonable {
 
 	loginSuccess("登录成功", true),

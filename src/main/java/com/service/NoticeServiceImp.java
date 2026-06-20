@@ -13,7 +13,7 @@ import com.myTool.MyMapTool;
 import com.po.AdminUser;
 import com.po.AdminUser_Notice_Relate;
 import com.po.Notice;
-import com.reponseData.ResponseData;
+import com.responseData.ResponseData;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -79,6 +79,7 @@ public class NoticeServiceImp implements NoticeService {
                     case "name":
                         adminUser = adminUserDao.queryAdminUserByName(keyword);
                         if (adminUser != null) {
+                            count = adminUser_Notice_RelateDao.queryAdminUser_Notice_RelatesCountByAdminUser(adminUser);
                             noticeWithNameList = new ArrayList<Map<String, Object>>();
                             List<AdminUser_Notice_Relate> adminUser_Notice_Relates = adminUser_Notice_RelateDao
                                     .queryAdminUser_Notice_RelatesByAdminUser(adminUser, start, end);

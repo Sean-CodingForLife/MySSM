@@ -3,7 +3,9 @@ package com.controller;
 import java.util.List;
 
 import javax.servlet.http.HttpSession;
+import com.message.Message;
 import com.po.Notice;
+import com.responseData.ResponseData;
 import com.service.NoticeService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,33 +35,33 @@ public class NoticeController extends BaseController {
 
 	@PostMapping("/notice")
 	@ResponseBody
-	public String addNotice(@RequestBody Notice notice, HttpSession session) {
+	public Message addNotice(@RequestBody Notice notice, HttpSession session) {
 
 		String adminUserAccount = (String) session.getAttribute("adminUserAccount");
 
-		return noticeService.addNotice(notice, adminUserAccount).toJson();
+		return noticeService.addNotice(notice, adminUserAccount);
 	}
 
 	@GetMapping("/notices")
 	@ResponseBody
-	public String queryNotice(@RequestParam String keyword, @RequestParam String type, @RequestParam Integer startPage,
-			Integer offset) {
-		return noticeService.queryNotices(keyword, type, startPage, offset).toJson();
+	public ResponseData queryNotice(@RequestParam String keyword, @RequestParam String type, @RequestParam Integer startPage,
+			@RequestParam Integer offset) {
+		return noticeService.queryNotices(keyword, type, startPage, offset);
 	}
 
 	@DeleteMapping("/notices")
 	@ResponseBody
-	public String deleteNotice(@RequestBody List<Notice> notices) {
-		return noticeService.deleteNotices(notices).toJson();
+	public Message deleteNotice(@RequestBody List<Notice> notices) {
+		return noticeService.deleteNotices(notices);
 
 	}
 
 	@PutMapping("/notice")
 	@ResponseBody
-	public String updateNotice(@RequestBody Notice notice, HttpSession session) {
+	public Message updateNotice(@RequestBody Notice notice, HttpSession session) {
 		String adminUserAccount = (String) session.getAttribute("adminUserAccount");
 
-		return noticeService.updateNotice(notice, adminUserAccount).toJson();
+		return noticeService.updateNotice(notice, adminUserAccount);
 	}
 
 }

@@ -18,7 +18,7 @@ public class J_Date extends JsonableAdapter {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 
         if (flag) {
-            if (key == null || key == "") {
+            if (key == null || key.equals("")) {
                 return ("\"" + format.format(date) + "\"");
             } else {
                 return ("\"" + key + "\" : " + "\"" + format.format(date) + "\"");

@@ -2,7 +2,9 @@ package com.controller;
 
 import java.util.List;
 
+import com.message.Message;
 import com.po.Job;
+import com.responseData.ResponseData;
 import com.service.JobService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,29 +34,29 @@ public class JobController extends BaseController {
 
 	@GetMapping("/jobs")
 	@ResponseBody
-	public String queryJobs(@RequestParam String keyword, @RequestParam Integer startPage,
+	public ResponseData queryJobs(@RequestParam String keyword, @RequestParam Integer startPage,
 			@RequestParam Integer offset) {
 
-		return jobService.queryJobs(keyword, startPage, offset).toJson();
+		return jobService.queryJobs(keyword, startPage, offset);
 	}
 
 	@PostMapping("/job")
 	@ResponseBody
-	public String addJob(@RequestBody Job job) {
+	public Message addJob(@RequestBody Job job) {
 
-		return jobService.addJob(job).toJson();
+		return jobService.addJob(job);
 	}
 
 	@PutMapping("/job")
 	@ResponseBody
-	public String updateJob(@RequestBody Job job) {
-		return jobService.updateJob(job).toJson();
+	public Message updateJob(@RequestBody Job job) {
+		return jobService.updateJob(job);
 	}
 
 	@DeleteMapping("/jobs")
 	@ResponseBody
-	public String deleteJob(@RequestBody List<Job> jobs) {
-		return jobService.deleteJobs(jobs).toJson();
+	public Message deleteJob(@RequestBody List<Job> jobs) {
+		return jobService.deleteJobs(jobs);
 	}
 
 }

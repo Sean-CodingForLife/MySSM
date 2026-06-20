@@ -22,7 +22,7 @@ public interface DepartmentDao {
 
     public Department queryDepartmentByName(@Param("name") String keyword);
 
-    public List<Department> queryDepartments();
+    public List<Department> queryDepartments(@Param("start") Integer start, @Param("end") Integer end);
 
     public List<Department> queryDepartmentsByName(@Param("keyword") String keyword, @Param("start") Integer start,
             @Param("end") Integer end);

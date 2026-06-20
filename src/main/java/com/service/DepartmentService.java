@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.message.Message;
 import com.po.Department;
-import com.reponseData.ResponseData;
+import com.responseData.ResponseData;
 
 public interface DepartmentService {
     public ResponseData queryDepartments(String keyword, Integer startPage, Integer offset);
