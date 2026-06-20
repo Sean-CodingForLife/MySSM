@@ -291,7 +291,7 @@
                                 }
                             }
                         },
-                        erorr: function () {
+                        error: function () {
                             alert("傻逼");
                         }
                     });
@@ -312,7 +312,7 @@
                                 }
                             }
                         },
-                        erorr: function () {
+                        error: function () {
                             alert("傻逼");
                         }
                     });

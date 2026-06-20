@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.message.Message;
 import com.po.User;
-import com.reponseData.ResponseData;
+import com.responseData.ResponseData;
 
 public interface UserService {
 	public ResponseData queryUsers(String keyword, String type, Integer startPage, Integer offset);

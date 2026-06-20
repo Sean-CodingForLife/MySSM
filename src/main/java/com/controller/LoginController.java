@@ -5,7 +5,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -41,30 +40,29 @@ public class LoginController extends BaseController {
 		} else if (type.equals("user")) {
 			return LoginController.userLoginPageUrl;
 		}
-		return "redirect:/error.jsp";
+		return BaseController.ErrorPage;
 	}
 
-	@PostMapping(value = "/user", produces = "text/plain;charset=UTF-8")
+	@PostMapping("/user")
 	@ResponseBody
-	public String login(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
+	public Message login(@RequestBody User user, HttpServletRequest request, HttpServletResponse response) {
 		Message message = userService.login(user);
 		if (message.getFlag()) {
 			MyTokenTool.addToken("user", request, response);
 		}
-		return message.toJson();
+		return message;
 	}
 
-	@PostMapping(value = "/admin", produces = "text/plain;charset=UTF-8")
+	@PostMapping("/admin")
 	@ResponseBody
-	public String login(@RequestBody AdminUser adminUser, Model model, HttpServletRequest request,
-			HttpServletResponse response) {
+	public Message login(@RequestBody AdminUser adminUser, HttpServletRequest request, HttpServletResponse response) {
 
 		Message message = adminUserService.login(adminUser);
 		if (message.getFlag()) {
 			request.getSession().setAttribute("adminUserAccount", adminUser.getAccount());
 			MyTokenTool.addToken("admin", request, response);
 		}
-		return message.toJson();
+		return message;
 	}
 
 }

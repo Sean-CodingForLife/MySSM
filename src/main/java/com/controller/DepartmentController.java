@@ -1,7 +1,9 @@
 package com.controller;
 
 import java.util.List;
+import com.message.Message;
 import com.po.Department;
+import com.responseData.ResponseData;
 import com.service.DepartmentService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,27 +33,27 @@ public class DepartmentController extends BaseController {
 
 	@GetMapping("/departments")
 	@ResponseBody
-	public String queryDepartments(@RequestParam String keyword, @RequestParam Integer startPage,
+	public ResponseData queryDepartments(@RequestParam String keyword, @RequestParam Integer startPage,
 			@RequestParam Integer offset) {
-		return departmentService.queryDepartments(keyword, startPage, offset).toJson();
+		return departmentService.queryDepartments(keyword, startPage, offset);
 	}
 
 	@DeleteMapping("/departments")
 	@ResponseBody
-	public String deleteDepartments(@RequestBody List<Department> departments) {
-		return departmentService.deleteDepartments(departments).toJson();
+	public Message deleteDepartments(@RequestBody List<Department> departments) {
+		return departmentService.deleteDepartments(departments);
 	}
 
 	@PutMapping("/department")
 	@ResponseBody
-	public String updateDepartment(@RequestBody Department department) {
-		return departmentService.updateDepartment(department).toJson();
+	public Message updateDepartment(@RequestBody Department department) {
+		return departmentService.updateDepartment(department);
 	}
 
 	@PostMapping("/department")
 	@ResponseBody
-	public String addDepartment(@RequestBody Department department) {
-		return departmentService.addDepartment(department).toJson();
+	public Message addDepartment(@RequestBody Department department) {
+		return departmentService.addDepartment(department);
 	}
 
 }

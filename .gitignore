@@ -1,0 +1,15 @@
+target/
+
+.classpath
+.project
+.settings/
+.vscode/
+.idea/
+.smarttomcat/
+
+*.class
+*.war
+*.ear
+*.jar
+
+*.log

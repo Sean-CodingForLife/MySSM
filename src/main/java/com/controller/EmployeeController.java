@@ -3,7 +3,9 @@ package com.controller;
 import java.util.List;
 import java.util.Map;
 
+import com.message.Message;
 import com.po.Employee;
+import com.responseData.ResponseData;
 import com.service.EmployeeService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,25 +35,25 @@ public class EmployeeController extends BaseController {
 
 	@GetMapping("/employees")
 	@ResponseBody
-	public String queryEmployees(@RequestParam String keyword, @RequestParam String type, @RequestParam Integer startPage, @RequestParam Integer offset) {
-		return employeeService.queryEmployees(keyword, type, startPage, offset).toJson();
+	public ResponseData queryEmployees(@RequestParam String keyword, @RequestParam String type, @RequestParam Integer startPage, @RequestParam Integer offset) {
+		return employeeService.queryEmployees(keyword, type, startPage, offset);
 	}
 
 	@DeleteMapping("/employees")
 	@ResponseBody
-	public String deleteEmployees(@RequestBody List<Employee> employees) {
-		return employeeService.deleteEmployees(employees).toJson();
+	public Message deleteEmployees(@RequestBody List<Employee> employees) {
+		return employeeService.deleteEmployees(employees);
 	}
 
 	@PostMapping("/employee")
 	@ResponseBody
-	public String addEmployee(@RequestBody Map<String, Object> map) {
-		return employeeService.addEmloyee(map).toJson();
+	public Message addEmployee(@RequestBody Map<String, Object> map) {
+		return employeeService.addEmployee(map);
 	}
 
 	@PutMapping("/employee")
 	@ResponseBody
-	public String updateEmployee(@RequestBody Map<String, Object> map) {
-		return employeeService.updateEmployee(map).toJson();
+	public Message updateEmployee(@RequestBody Map<String, Object> map) {
+		return employeeService.updateEmployee(map);
 	}
 }

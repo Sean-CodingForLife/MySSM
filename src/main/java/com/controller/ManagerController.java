@@ -22,7 +22,7 @@ public class ManagerController extends BaseController {
 		} else if (MyTokenTool.checkToken("admin", request)) {
 			return ManagerController.adminManagerPageUrl;
 		} else {
-			return "redirect:/" + BaseController.ErorrPage;
+			return BaseController.ErrorPage;
 		}
 	}
 }

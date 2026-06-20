@@ -1,7 +1,9 @@
 package com.controller;
 
 import java.util.List;
+import com.message.Message;
 import com.po.User;
+import com.responseData.ResponseData;
 import com.service.UserService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,15 +31,15 @@ public class UserController extends BaseController {
 
 	@GetMapping("/users")
 	@ResponseBody
-	public String queryUser(@RequestParam String keyword, @RequestParam String type, @RequestParam Integer startPage,
+	public ResponseData queryUser(@RequestParam String keyword, @RequestParam String type, @RequestParam Integer startPage,
 			@RequestParam Integer offset) {
-		return userService.queryUsers(keyword, type, startPage, offset).toJson();
+		return userService.queryUsers(keyword, type, startPage, offset);
 	}
 
 	@DeleteMapping("/users")
 	@ResponseBody
-	public String deleteUser(@RequestBody List<User> users) {
-		return userService.deleteUsers(users).toJson();
+	public Message deleteUser(@RequestBody List<User> users) {
+		return userService.deleteUsers(users);
 	}
 
 }
