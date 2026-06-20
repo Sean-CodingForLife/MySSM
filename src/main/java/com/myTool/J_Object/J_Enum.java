@@ -14,7 +14,7 @@ public class J_Enum extends JsonableAdapter {
     public String toJson (String key, Boolean flag) {
 
         if (flag) {
-            if (key == null || key == "") {
+            if (key == null || key.equals("")) {
                 return "\"" + e.name() + "\"";
             } else {
                 return ("\"" + key + "\" : " + "\"" + e.name() + "\"");

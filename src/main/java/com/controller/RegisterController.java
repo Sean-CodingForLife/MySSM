@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import com.message.Message;
 import com.po.User;
 import com.service.UserService;
 
@@ -26,11 +27,11 @@ public class RegisterController {
 		return RegisterController.userRegisterPageUrl;
 	}
 
-	@PostMapping(produces = "text/plain;charset=UTF-8")
+	@PostMapping
 	@ResponseBody
-	public String register(@RequestBody User user) {
+	public Message register(@RequestBody User user) {
 
-		return userService.register(user).toJson();
+		return userService.register(user);
 
 	}
 

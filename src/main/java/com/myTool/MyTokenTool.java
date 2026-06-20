@@ -30,7 +30,7 @@ public class MyTokenTool {
             default : 
                 return false;
         }
-        return nekot.equals(token);
+        return nekot != null && nekot.equals(token);
     }
 
     public static void addToken(String type, HttpServletRequest request, HttpServletResponse response) {

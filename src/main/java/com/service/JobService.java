@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.message.Message;
 import com.po.Job;
-import com.reponseData.ResponseData;
+import com.responseData.ResponseData;
 
 public interface JobService {
     public ResponseData queryJobs(String keyword, Integer startPage, Integer offset);

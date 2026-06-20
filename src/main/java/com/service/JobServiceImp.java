@@ -7,13 +7,13 @@ import com.dao.JobDao;
 import com.dao.ToolDao;
 import com.message.Message;
 import com.po.Job;
-import com.reponseData.ResponseData;
+import com.responseData.ResponseData;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service("JobrService")
+@Service("JobService")
 @Transactional
 public class JobServiceImp implements JobService {
 
@@ -32,7 +32,7 @@ public class JobServiceImp implements JobService {
         Integer count = 0;
         List<Job> jobs = null;
 
-        if (keyword == "" && (startPage == null || offset == null)) {
+        if ("".equals(keyword) && (startPage == null || offset == null)) {
             count = jobDao.queryJobsCount();
             if (count != 0) {
                 jobs = jobDao.queryAllJob();
@@ -71,7 +71,8 @@ public class JobServiceImp implements JobService {
     @Override
     public Message deleteJobs(List<Job> jobs) {
         for (Job job : jobs) {
-            if ((employee_job_RelateDao.deleteEmployee_Job_RelatesByJob(job) == 0) || (jobDao.deleteJob(job) == 0)) {
+            employee_job_RelateDao.deleteEmployee_Job_RelatesByJob(job);
+            if (jobDao.deleteJob(job) == 0) {
                 return Message.fail;
             }
         }

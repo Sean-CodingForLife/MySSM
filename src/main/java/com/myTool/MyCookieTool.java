@@ -10,6 +10,9 @@ public class MyCookieTool {
     }
     
     public static String getCookiesValueByName(String name, Cookie[] cookies) {
+        if (cookies == null) {
+            return "";
+        }
         for (Cookie cookie : cookies) {
             if (cookie.getName().equals(name)) {
                 return cookie.getValue();

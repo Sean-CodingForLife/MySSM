@@ -13,6 +13,8 @@ public interface AdminUser_Notice_RelateDao {
 
     public List<AdminUser_Notice_Relate> queryAdminUser_Notice_RelatesByAdminUser(@Param("adminUser") AdminUser adminUser, @Param("start") Integer start, @Param("end") Integer end);
 
+    public Integer queryAdminUser_Notice_RelatesCountByAdminUser(AdminUser adminUser);
+
     public AdminUser queryAdminUserByNotice(Notice notice);
 
     public Integer deleteAdminUser_Notice_RelateByNotice(Notice notice);

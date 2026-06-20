@@ -10,6 +10,7 @@ import org.apache.ibatis.annotations.Param;
 
 public interface Employee_Job_RelateDao {
     public List<Employee_Job_Relate> queryEmployee_Job_RelatesByJob(@Param("job") Job job, @Param("start") Integer start, @Param("end") Integer end);
+    public Integer                   queryEmployee_Job_RelatesCountByJob(Job job);
     public Job                       queryJobByEmployee(Employee employee);
     public Integer                   addEmployee_Job_Relate(Employee_Job_Relate employee_Job_Relate);
     public Integer                   deleteEmployee_Job_RelateByEmployee(Employee employee);

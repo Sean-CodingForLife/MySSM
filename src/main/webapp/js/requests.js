@@ -14,7 +14,7 @@ function getRequest(getRequestParam) {
                 drawPageBar(data.head.count, getRequestParam.startPage, getRequestParam.offset);
             }
         },
-        erorr: function () {
+        error: function () {
             alert("傻逼");
         }
     });
@@ -33,7 +33,7 @@ function postRequest(url, data, success) {
                 success();
             } else {}
         },
-        erorr: function () {
+        error: function () {
             alert("傻逼");
         }
     });
@@ -48,11 +48,11 @@ function putRequest(url, data, success) {
         dataType: "json",
         success: function (data) {
             alert(data.message);
-            if (data.type == true) {
+            if (data.flag == true) {
                 success();
             } else {}
         },
-        erorr: function () {
+        error: function () {
             alert("傻逼");
         }
     });
@@ -67,11 +67,11 @@ function deleteRequest(url, data, success) {
         dataType: "json",
         success: function (data) {
             alert(data.message);
-            if (data.type == true) {
+            if (data.flag == true) {
                 success();
             } else {}
         },
-        erorr: function () {
+        error: function () {
             alert("傻逼");
         }
     });

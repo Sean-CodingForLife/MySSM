@@ -1,13 +1,10 @@
 package com.myTool.J_Object;
 
-import com.myTool.Jsonable;
 import com.myTool.JsonableAdapter;
 
 public class J_Null extends JsonableAdapter {
-    private Object object;
 
     public J_Null(Object object) {
-        this.object = object;
     }
 
     @Override

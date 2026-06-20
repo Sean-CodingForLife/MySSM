@@ -17,7 +17,7 @@ import com.po.Employee;
 import com.po.Employee_Department_Relate;
 import com.po.Employee_Job_Relate;
 import com.po.Job;
-import com.reponseData.ResponseData;
+import com.responseData.ResponseData;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -172,6 +172,7 @@ public class EmployeeServiceImp implements EmployeeService {
             case "job":
                 job = jobDao.queryJobByName(keyword);
                 if (job != null) {
+                    count = employee_Job_RelateDao.queryEmployee_Job_RelatesCountByJob(job);
                     employeeWithJobAndDepartmentList = new ArrayList<Map<String, Object>>();
                     List<Employee_Job_Relate> employee_Job_Relates = employee_Job_RelateDao
                             .queryEmployee_Job_RelatesByJob(job, start, end);
@@ -192,6 +193,7 @@ public class EmployeeServiceImp implements EmployeeService {
             case "department":
                 department = departmentDao.queryDepartmentByName(keyword);
                 if (department != null) {
+                    count = employee_Department_RelateDao.queryEmployee_Department_RelatesCountByDepartment(department);
                     employeeWithJobAndDepartmentList = new ArrayList<Map<String, Object>>();
                     List<Employee_Department_Relate> employee_Department_Relates = employee_Department_RelateDao
                             .queryEmployee_Department_RelatesByDepartment(department, start, end);
@@ -215,7 +217,7 @@ public class EmployeeServiceImp implements EmployeeService {
     }
 
     @Override
-    public Message addEmloyee(Map<String, Object> map) {
+    public Message addEmployee(Map<String, Object> map) {
 
         String jobNo = (String) map.get("job_no");
         String departmentNo = (String) map.get("department_no");
